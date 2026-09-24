@@ -49,6 +49,7 @@ export function MenuCategory({ category }: Props) {
             <MenuItem
               key={item.id}
               item={{
+                id: item.id,                    
                 name: item.name,
                 description: item.description || "",
                 price: Number(item.price),
