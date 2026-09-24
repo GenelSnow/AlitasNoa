@@ -7,17 +7,17 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
 interface Props {
-  params: Promise<{ id: string }>
+    params: Promise<{ id: string }>
 }
 
 export default async function ComidaPage({ params }: Props) {
-  const { id } = await params
-  const supabase = await createClient()
+    const { id } = await params
+    const supabase = await createClient()
 
-  // Traer el item + su categoría + reseñas
-  const { data: item, error } = await supabase
-    .from("menu_items")
-    .select(`
+    // Traer el item + su categoría + reseñas
+    const { data: item, error } = await supabase
+        .from("menu_items")
+        .select(`
       id,
       name,
       description,
@@ -37,191 +37,185 @@ export default async function ComidaPage({ params }: Props) {
         created_at
       )
     `)
-    .eq("id", id)
-    .eq("is_available", true)
-    .single()
+        .eq("id", id)
+        .eq("is_available", true)
+        .single()
 
-  if (error || !item) {
-    notFound()
-  }
+    if (error || !item) {
+        notFound()
+    }
 
-  const formattedPrice = new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0,
-  }).format(Number(item.price))
+    const formattedPrice = new Intl.NumberFormat("es-CO", {
+        style: "currency",
+        currency: "COP",
+        minimumFractionDigits: 0,
+    }).format(Number(item.price))
 
-  const isMielMostaza = item.categories?.name?.toLowerCase().includes("miel")
-  const accentColor = isMielMostaza ? "text-yellow-400" : "text-orange-500"
-  const flameColor = isMielMostaza ? "fill-yellow-400 text-yellow-400" : "fill-orange-500 text-orange-500"
+    const isMielMostaza = item.categories?.name?.toLowerCase().includes("miel")
+    const accentColor = isMielMostaza ? "text-yellow-400" : "text-orange-500"
+    const flameColor = isMielMostaza ? "fill-yellow-400 text-yellow-400" : "fill-orange-500 text-orange-500"
 
-  const reviews = item.reviews || []
-  const averageRating =
-    reviews.length > 0
-      ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
-      : null
+    const reviews = item.reviews || []
+    const averageRating =
+        reviews.length > 0
+            ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
+            : null
 
-  return (
-    <div className="container mx-auto px-4 py-10 max-w-5xl">
-      {/* Volver */}
-      <Link
-        href="/menu"
-        className="inline-flex items-center gap-2 text-zinc-400 hover:text-orange-400 transition-colors mb-8"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Volver al menú
-      </Link>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* Imagen principal */}
-        <div className="relative aspect-square rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800">
-          {item.image_url ? (
-            <Image
-              src={item.image_url}
-              alt={item.name}
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-zinc-600">
-              Sin imagen
-            </div>
-          )}
-        </div>
-
-        {/* Información */}
-        <div className="flex flex-col">
-          <div className="flex items-center gap-3 mb-3">
-            {item.categories?.name && (
-              <Badge variant="outline" className="border-zinc-700 text-zinc-400">
-                {item.categories.name}
-              </Badge>
-            )}
-            {item.is_popular && (
-              <Badge className="bg-orange-500 text-white font-bold">
-                <Crown className="h-3.5 w-3.5 mr-1" />
-                Popular
-              </Badge>
-            )}
-          </div>
-
-          <h1 className={`text-4xl md:text-5xl font-black tracking-tight ${accentColor}`}>
-            {item.name}
-          </h1>
-
-          <p className="text-zinc-400 mt-4 text-lg leading-relaxed">
-            {item.description}
-          </p>
-
-          {/* Precio */}
-          <div className="mt-6">
-            <span className={`text-4xl font-black ${accentColor}`}>
-              {formattedPrice}
-            </span>
-          </div>
-
-          {/* Características */}
-          <div className="mt-8 space-y-4">
-            <h2 className="text-xl font-bold text-white">Características</h2>
-            
-            {item.spicy_level > 0 && (
-              <div className="flex items-center gap-2">
-                <span className="text-zinc-400 text-sm w-28">Nivel picante:</span>
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: item.spicy_level }).map((_, i) => (
-                    <Flame key={i} className={`h-5 w-5 ${flameColor}`} />
-                  ))}
-                  <span className="text-sm text-zinc-500 ml-2">
-                    {item.spicy_level === 1 && "Suave"}
-                    {item.spicy_level === 2 && "Medio"}
-                    {item.spicy_level === 3 && "Extremo"}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {averageRating && (
-              <div className="flex items-center gap-2">
-                <span className="text-zinc-400 text-sm w-28">Valoración:</span>
-                <div className="flex items-center gap-1">
-                  <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                  <span className="font-bold text-white">{averageRating}</span>
-                  <span className="text-zinc-500 text-sm">
-                    ({reviews.length} reseña{reviews.length !== 1 ? "s" : ""})
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Botón pedir */}
-          <div className="mt-10">
-            <Button
-              asChild
-              size="lg"
-              className="w-full md:w-auto bg-green-600 hover:bg-green-500 text-white font-bold text-base px-8"
+    return (
+        <div className="container mx-auto px-4 py-10 max-w-5xl">
+            {/* Volver */}
+            <Link
+                href="/menu"
+                className="inline-flex items-center gap-2 text-zinc-400 hover:text-orange-400 transition-colors mb-8"
             >
-              <a
-                href={`https://wa.me/573105332480?text=Hola, quiero pedir: ${item.name}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Pedir por WhatsApp
-              </a>
-            </Button>
-          </div>
-        </div>
-      </div>
+                <ArrowLeft className="h-4 w-4" />
+                Volver al menú
+            </Link>
 
-      {/* Reseñas */}
-      <section className="mt-16">
-        <h2 className="text-2xl font-bold text-white mb-6">
-          Reseñas de clientes
-        </h2>
-
-        {reviews.length === 0 ? (
-          <p className="text-zinc-500">Aún no hay reseñas para este producto.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {reviews.map((review) => (
-              <div
-                key={review.id}
-                className="border border-zinc-800 rounded-xl p-5 bg-zinc-950/60"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-semibold text-white">{review.author_name}</span>
-                  <div className="flex items-center gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${
-                          i < review.rating
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "text-zinc-700"
-                        }`}
-                      />
-                    ))}
-                  </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                {/* Imagen principal */}
+                <div className="relative aspect-square rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800">
+                    {item.image_url ? (
+                        <Image
+                            src={item.image_url}
+                            alt={item.name}
+                            fill
+                            className="object-cover"
+                            priority
+                            sizes="(max-width: 1024px) 100vw, 50vw"
+                        />
+                    ) : (
+                        <div className="flex items-center justify-center h-full text-zinc-600">
+                            Sin imagen
+                        </div>
+                    )}
                 </div>
-                {review.comment && (
-                  <p className="text-zinc-400 text-sm leading-relaxed">
-                    {review.comment}
-                  </p>
+
+                {/* Información */}
+                <div className="flex flex-col">
+                    <div className="flex items-center gap-3 mb-3">
+                        {item.categories?.name && (
+                            <Badge variant="outline" className="border-zinc-700 text-zinc-400">
+                                {item.categories.name}
+                            </Badge>
+                        )}
+                        {item.is_popular && (
+                            <Badge className="bg-orange-500 text-white font-bold">
+                                <Crown className="h-3.5 w-3.5 mr-1" />
+                                Popular
+                            </Badge>
+                        )}
+                    </div>
+
+                    <h1 className={`text-4xl md:text-5xl font-black tracking-tight ${accentColor}`}>
+                        {item.name}
+                    </h1>
+
+                    <p className="text-zinc-400 mt-4 text-lg leading-relaxed">
+                        {item.description}
+                    </p>
+
+                    {/* Precio */}
+                    <div className="mt-6">
+                        <span className={`text-4xl font-black ${accentColor}`}>
+                            {formattedPrice}
+                        </span>
+                    </div>
+
+                    {/* Características */}
+                    <div className="mt-8 space-y-4">
+                        <h2 className="text-xl font-bold text-white">Características</h2>
+
+                        {item.spicy_level > 0 && (
+                            <div className="flex items-center gap-2">
+                                <span className="text-zinc-400 text-sm w-28">Nivel picante:</span>
+                                <div className="flex items-center gap-1">
+                                    {Array.from({ length: item.spicy_level }).map((_, i) => (
+                                        <Flame key={i} className={`h-5 w-5 ${flameColor}`} />
+                                    ))}
+                                    <span className="text-sm text-zinc-500 ml-2">
+                                        {item.spicy_level === 1 && "Suave"}
+                                        {item.spicy_level === 2 && "Medio"}
+                                        {item.spicy_level === 3 && "Extremo"}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
+                        {averageRating && (
+                            <div className="flex items-center gap-2">
+                                <span className="text-zinc-400 text-sm w-28">Valoración:</span>
+                                <div className="flex items-center gap-1">
+                                    <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                                    <span className="font-bold text-white">{averageRating}</span>
+                                    <span className="text-zinc-500 text-sm">
+                                        ({reviews.length} reseña{reviews.length !== 1 ? "s" : ""})
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Botón pedir */}
+                    <div className="mt-10">
+                        <a
+                            href={`https://wa.me/573105332480?text=${encodeURIComponent(`Hola, quiero pedir: ${item.name}`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center w-full md:w-auto bg-green-600 hover:bg-green-500 text-white font-bold text-base px-8 h-11 rounded-md transition-colors"
+                        >
+                            Pedir por WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {/* Reseñas */}
+            <section className="mt-16">
+                <h2 className="text-2xl font-bold text-white mb-6">
+                    Reseñas de clientes
+                </h2>
+
+                {reviews.length === 0 ? (
+                    <p className="text-zinc-500">Aún no hay reseñas para este producto.</p>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        {reviews.map((review) => (
+                            <div
+                                key={review.id}
+                                className="border border-zinc-800 rounded-xl p-5 bg-zinc-950/60"
+                            >
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="font-semibold text-white">{review.author_name}</span>
+                                    <div className="flex items-center gap-0.5">
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                            <Star
+                                                key={i}
+                                                className={`h-4 w-4 ${i < review.rating
+                                                    ? "fill-yellow-400 text-yellow-400"
+                                                    : "text-zinc-700"
+                                                    }`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                                {review.comment && (
+                                    <p className="text-zinc-400 text-sm leading-relaxed">
+                                        {review.comment}
+                                    </p>
+                                )}
+                                <p className="text-zinc-600 text-xs mt-3">
+                                    {new Date(review.created_at).toLocaleDateString("es-CO", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                    })}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
                 )}
-                <p className="text-zinc-600 text-xs mt-3">
-                  {new Date(review.created_at).toLocaleDateString("es-CO", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
-  )
+            </section>
+        </div>
+    )
 }
