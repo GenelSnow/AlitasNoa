@@ -105,13 +105,13 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
-                href="/auth/sign-up"
+                href="/app/auth/sign-up"
                 className="inline-flex items-center justify-center bg-white hover:bg-zinc-200 text-black font-bold text-sm px-6 h-10 rounded-full transition-colors"
               >
                 Crear cuenta
               </Link>
               <Link
-                href="/auth/login"
+                href="/app/auth/login"
                 className="inline-flex items-center justify-center border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white font-medium text-sm px-6 h-10 rounded-full transition-colors"
               >
                 Iniciar sesión
