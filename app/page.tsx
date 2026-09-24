@@ -1,19 +1,23 @@
 import Link from "next/link"
 import { Flame, Percent, Gift, Star, ArrowRight } from "lucide-react"
+import { createClient } from "@/lib/supabase/server"
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
   return (
     <div className="relative min-h-[calc(100vh-140px)] flex flex-col">
       {/* Hero */}
       <section className="flex-1 flex items-center justify-center px-4 py-16 md:py-24">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Badge superior */}
           <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/30 text-orange-400 text-sm font-medium px-4 py-1.5 rounded-full mb-8">
             <Flame className="h-4 w-4 fill-orange-500 text-orange-500" />
             Bienvenido a AlitasNOA
           </div>
 
-          {/* Título principal */}
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white uppercase leading-none">
             Alas que te hacen
             <span className="block text-orange-500 mt-2">volar</span>
@@ -24,7 +28,6 @@ export default function Home() {
             Preparadas al momento con salsas caseras.
           </p>
 
-          {/* Botones principales */}
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/menu"
@@ -46,21 +49,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Recordatorio de cuenta / beneficios */}
+      {/* Beneficios de cuenta */}
       <section className="border-t border-zinc-900 bg-zinc-950/80">
         <div className="container mx-auto px-4 py-12 max-w-5xl">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-3xl font-bold text-white">
-              ¿Tienes cuenta?
+              {user ? "Tus beneficios de miembro" : "¿Tienes cuenta?"}
             </h2>
             <p className="text-zinc-400 mt-2 max-w-xl mx-auto">
-              Si inicias sesión o creas una cuenta obtienes beneficios exclusivos
-              en cada pedido.
+              {user
+                ? `Hola ${user.email}, ya tienes acceso a descuentos y promociones exclusivas.`
+                : "Si inicias sesión o creas una cuenta obtienes beneficios exclusivos en cada pedido."}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Beneficio 1 */}
             <div className="border border-zinc-800 rounded-2xl p-6 bg-zinc-900/50 hover:border-orange-500/40 transition-colors">
               <div className="h-12 w-12 rounded-xl bg-orange-500/10 flex items-center justify-center mb-4">
                 <Percent className="h-6 w-6 text-orange-500" />
@@ -72,7 +75,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Beneficio 2 */}
             <div className="border border-zinc-800 rounded-2xl p-6 bg-zinc-900/50 hover:border-yellow-500/40 transition-colors">
               <div className="h-12 w-12 rounded-xl bg-yellow-500/10 flex items-center justify-center mb-4">
                 <Gift className="h-6 w-6 text-yellow-400" />
@@ -84,7 +86,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Beneficio 3 */}
             <div className="border border-zinc-800 rounded-2xl p-6 bg-zinc-900/50 hover:border-green-500/40 transition-colors">
               <div className="h-12 w-12 rounded-xl bg-green-500/10 flex items-center justify-center mb-4">
                 <Star className="h-6 w-6 text-green-400" />
@@ -97,27 +98,29 @@ export default function Home() {
             </div>
           </div>
 
-          {/* CTA cuenta */}
-          <div className="mt-10 text-center">
-            <p className="text-zinc-500 text-sm mb-4">
-              ¿Aún no tienes cuenta? Crea una en segundos y empieza a disfrutar
-              de los beneficios.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link
-                href="/app/auth/sign-up"
-                className="inline-flex items-center justify-center bg-white hover:bg-zinc-200 text-black font-bold text-sm px-6 h-10 rounded-full transition-colors"
-              >
-                Crear cuenta
-              </Link>
-              <Link
-                href="/app/auth/login"
-                className="inline-flex items-center justify-center border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white font-medium text-sm px-6 h-10 rounded-full transition-colors"
-              >
-                Iniciar sesión
-              </Link>
+          {/* CTA solo si NO está logueado */}
+          {!user && (
+            <div className="mt-10 text-center">
+              <p className="text-zinc-500 text-sm mb-4">
+                ¿Aún no tienes cuenta? Crea una en segundos y empieza a disfrutar
+                de los beneficios.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Link
+                  href="/auth/sign-up"
+                  className="inline-flex items-center justify-center bg-white hover:bg-zinc-200 text-black font-bold text-sm px-6 h-10 rounded-full transition-colors"
+                >
+                  Crear cuenta
+                </Link>
+                <Link
+                  href="/auth/login"
+                  className="inline-flex items-center justify-center border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white font-medium text-sm px-6 h-10 rounded-full transition-colors"
+                >
+                  Iniciar sesión
+                </Link>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
     </div>
