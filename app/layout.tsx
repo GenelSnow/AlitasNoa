@@ -18,7 +18,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${inter.className} bg-black text-white antialiased`}>
+      <body className={`${inter.className} bg-black text-white antialiased`}
+      suppressHydrationWarning >
         <Header />
         <main className="min-h-screen">{children}</main>
         <Footer />
