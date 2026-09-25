@@ -38,7 +38,7 @@ export default function SignUpPage() {
     // Email interno (el usuario no lo ve)
     const emailInterno = `${whatsappFinal}@clientes.alitasnoa.local`
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: emailInterno,
       password,
       options: {
@@ -49,6 +49,14 @@ export default function SignUpPage() {
         },
       },
     })
+
+    console.log("SIGNUP RESULT:", { data, error })
+    console.log("URL:", process.env.NEXT_PUBLIC_SUPABASE_URL)
+    // No loguees la key completa en producción; solo para depurar:
+    console.log("KEY presente:", !!(
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    ))
 
     setLoading(false)
 
