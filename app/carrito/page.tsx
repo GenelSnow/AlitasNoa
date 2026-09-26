@@ -142,7 +142,7 @@ export default function CarritoPage() {
                     : "Llave"
 
         const partes: string[] = [
-            "🍗 *Pedido AlitasNOA*",
+            "*Pedido AlitasNOA*",
             "━━━━━━━━━━━━━━",
             "",
             "*Productos*",
@@ -157,24 +157,24 @@ export default function CarritoPage() {
             "",
             "━━━━━━━━━━━━━━",
             "*Datos de entrega*",
-            `👤 Nombre: ${nombre.trim()}`,
-            `📱 WhatsApp: ${telefono.trim()}`,
-            `📍 Dirección: ${direccion.trim()}`,
+            `Nombre: ${nombre.trim()}`,
+            `WhatsApp: ${telefono.trim()}`,
+            `Dirección: ${direccion.trim()}`,
         ]
 
         if (referencia.trim()) {
-            partes.push(`🏠 Referencia: ${referencia.trim()}`)
+            partes.push(`Referencia: ${referencia.trim()}`)
         }
 
         if (nota.trim()) {
-            partes.push(`📝 Nota: ${nota.trim()}`)
+            partes.push(`Nota: ${nota.trim()}`)
         }
 
         if (codigoUsado) {
             partes.push(
                 "",
                 "━━━━━━━━━━━━━━",
-                "🎁 *Estoy usando código de referido, certifica mi punto de referido.*"
+                "*Estoy usando código de referido, certifica mi punto de referido.*"
             )
         }
 
