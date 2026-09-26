@@ -58,7 +58,7 @@ export default async function Home() {
             </h2>
             <p className="text-zinc-400 mt-2 max-w-xl mx-auto">
               {user
-                ? `Hola ${user.email}, ya tienes acceso a descuentos y promociones exclusivas.`
+                ? `Hola ${user.user_metadata?.nombre || user.email}, ya tienes acceso a descuentos y promociones exclusivas.`
                 : "Si inicias sesión o creas una cuenta obtienes beneficios exclusivos en cada pedido."}
             </p>
           </div>

@@ -41,7 +41,7 @@ export async function Header() {
 
           {/* Auth + WhatsApp */}
           <div className="flex items-center gap-3">
-            <AuthButtons email={user?.email} />
+            <AuthButtons email={user?.user_metadata?.nombre} />
 
             <a
               href="https://wa.me/573105332480"
