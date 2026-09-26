@@ -1,7 +1,11 @@
+
+
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { getPerfil, esStaff } from "@/lib/perfil"
+import Link from "next/link";
 import { CompletarPedidoButton } from "@/components/admin/CompletarPedidoButton"
+
 
 export default async function AdminPedidosPage() {
   const perfil = await getPerfil()
@@ -84,7 +88,7 @@ export default async function AdminPedidosPage() {
                   href={`/admin/pedidos/${p.id}`}
                   className="text-sm text-orange-400 hover:underline"
                 >
-                  Ver seguimiento
+                  Ver pedido
                 </Link>
               </li>
             )
