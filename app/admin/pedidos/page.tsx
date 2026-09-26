@@ -69,23 +69,24 @@ export default async function AdminPedidosPage() {
                     <p className="text-xs text-zinc-500 mt-1">Nota: {p.notas}</p>
                   )}
                   <span
-                    className={`inline-block mt-2 text-xs font-bold px-2 py-0.5 rounded-full ${
-                      p.estado === "completado"
+                    className={`inline-block mt-2 text-xs font-bold px-2 py-0.5 rounded-full ${p.estado === "completado"
                         ? "bg-green-500/15 text-green-400"
                         : p.estado === "pendiente"
                           ? "bg-yellow-500/15 text-yellow-400"
                           : "bg-zinc-700 text-zinc-300"
-                    }`}
+                      }`}
                   >
                     {p.estado}
                   </span>
                 </div>
 
                 {p.estado !== "completado" && p.estado !== "cancelado" && (
-                  <CompletarPedidoButton
-                    pedidoId={p.id}
-                    validadorId={perfil.id}
-                  />
+                  <Link
+                    href={`/admin/pedidos/${p.id}`}
+                    className="text-sm text-orange-400 hover:underline"
+                  >
+                    Ver seguimiento
+                  </Link>
                 )}
               </li>
             )

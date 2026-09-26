@@ -203,6 +203,7 @@ export default function CarritoPage() {
                 data: { user },
             } = await supabase.auth.getUser()
 
+            let referidorId: string | null = null
             let codigoUsado: string | null = null
 
             // --- Código de referido (opcional) ---
