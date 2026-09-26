@@ -9,11 +9,24 @@ export async function Header() {
     data: { user },
   } = await supabase.auth.getUser()
 
+  let nombre: string | null = null
+  let rol: string | null = null
+
+  if (user) {
+    const { data: perfil } = await supabase
+      .from("perfiles")
+      .select("nombre, rol")
+      .eq("id", user.id)
+      .single()
+
+    nombre = perfil?.nombre ?? user.user_metadata?.nombre ?? "Usuario"
+    rol = perfil?.rol ?? "usuario"
+  }
+
   return (
     <header className="relative border-b border-orange-900/40 bg-black/90 backdrop-blur-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between gap-4">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group shrink-0">
             <Flame className="h-7 w-7 text-orange-500 fill-orange-500 group-hover:scale-110 transition-transform" />
             <span className="text-xl md:text-2xl font-black tracking-tighter text-white uppercase">
@@ -21,7 +34,6 @@ export async function Header() {
             </span>
           </Link>
 
-          {/* Navegación */}
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             <Link
               href="/menu"
@@ -39,9 +51,8 @@ export async function Header() {
             </a>
           </nav>
 
-          {/* Auth + WhatsApp */}
           <div className="flex items-center gap-3">
-            <AuthButtons email={user?.user_metadata?.nombre} />
+            <AuthButtons nombre={nombre} rol={rol} />
 
             <a
               href="https://wa.me/573105332480"
