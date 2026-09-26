@@ -2,6 +2,7 @@
 
 import { useCart } from "@/components/cart/CartProvider"
 import { ShoppingBag } from "lucide-react"
+import { toast } from "sonner"
 
 type Props = {
   id: string
@@ -9,9 +10,17 @@ type Props = {
   price: number
   image_url?: string | null
   className?: string
+  label?: string
 }
 
-export function AddToCartButton({ id, name, price, image_url, className }: Props) {
+export function AddToCartButton({
+  id,
+  name,
+  price,
+  image_url,
+  className,
+  label = "Agregar",
+}: Props) {
   const { addItem } = useCart()
 
   return (
@@ -21,6 +30,9 @@ export function AddToCartButton({ id, name, price, image_url, className }: Props
         e.preventDefault()
         e.stopPropagation()
         addItem({ id, name, price, image_url })
+        toast.success("Agregado al carrito", {
+          description: name,
+        })
       }}
       className={
         className ??
@@ -28,7 +40,7 @@ export function AddToCartButton({ id, name, price, image_url, className }: Props
       }
     >
       <ShoppingBag className="h-4 w-4" />
-      Agregar
+      {label}
     </button>
   )
 }

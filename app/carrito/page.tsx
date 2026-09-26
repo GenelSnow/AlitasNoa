@@ -6,6 +6,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useCart } from "@/components/cart/CartProvider"
 import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 import {
     Minus,
     Plus,
@@ -300,6 +301,10 @@ export default function CarritoPage() {
             // --- WhatsApp ---
             const text = encodeURIComponent(buildWhatsAppMessage(codigoUsado))
             window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, "_blank")
+
+            toast.success("Pedido listo", {
+                description: "Se abrió WhatsApp con tu mensaje. Envíalo para confirmar.",
+            })
 
             clearCart()
             router.push("/menu")

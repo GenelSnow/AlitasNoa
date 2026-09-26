@@ -4,6 +4,7 @@ import "./globals.css"
 import { Header } from "@/components/esec/header"
 import { Footer } from "@/components/esec/footer"
 import { CartProvider } from "@/components/cart/CartProvider"
+import { Toaster } from "sonner"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -12,19 +13,23 @@ export const metadata: Metadata = {
   description: "Las mejores alitas de la ciudad. Clásicas y Miel Mostaza.",
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
-      <body className={`${inter.className} bg-black text-white antialiased`}
-      suppressHydrationWarning >
+      <body
+        className={`${inter.className} bg-black text-white antialiased`}
+        suppressHydrationWarning
+      >
         <CartProvider>
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+          <Header />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+          <Toaster
+            theme="dark"
+            position="top-center"
+            richColors
+            closeButton
+          />
         </CartProvider>
       </body>
     </html>
