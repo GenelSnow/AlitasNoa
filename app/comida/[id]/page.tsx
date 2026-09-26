@@ -5,6 +5,8 @@ import Link from "next/link"
 import { Flame, Crown, Star, ArrowLeft } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { AddToCartButton } from "@/components/cart/AddToCartButton"
+import { ReviewForm } from "@/components/menu/ReviewForm"
 
 interface Props {
     params: Promise<{ id: string }>
@@ -111,9 +113,15 @@ export default async function ComidaPage({ params }: Props) {
                         {item.name}
                     </h1>
 
-                    <p className="text-zinc-400 mt-4 text-lg leading-relaxed">
-                        {item.description}
-                    </p>
+                    {item.description ? (
+                        <p className="text-zinc-400 mt-4 text-lg leading-relaxed">
+                            {item.description}
+                        </p>
+                    ) : (
+                        <p className="text-zinc-600 mt-4 text-sm italic">
+                            Sin descripción por ahora.
+                        </p>
+                    )}
 
                     {/* Precio */}
                     <div className="mt-6">
@@ -158,23 +166,21 @@ export default async function ComidaPage({ params }: Props) {
 
                     {/* Botón pedir */}
                     <div className="mt-10">
-                        <a
-                            href={`https://wa.me/573105332480?text=${encodeURIComponent(`Hola, quiero pedir: ${item.name}`)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center w-full md:w-auto bg-green-600 hover:bg-green-500 text-white font-bold text-base px-8 h-11 rounded-md transition-colors"
-                        >
-                            Pedir por WhatsApp
-                        </a>
+                        <AddToCartButton
+                            id={item.id}
+                            name={item.name}
+                            price={Number(item.price)}
+                            image_url={item.image_url}
+                            label="Agregar al carrito"
+                            className="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-black font-bold text-base px-8 h-11 rounded-full transition-colors"
+                        />
                     </div>
                 </div>
             </div>
 
             {/* Reseñas */}
-            <section className="mt-16">
-                <h2 className="text-2xl font-bold text-white mb-6">
-                    Reseñas de clientes
-                </h2>
+            <section className="mt-16 space-y-8">
+                <h2 className="text-2xl font-bold text-white">Reseñas de clientes</h2>
 
                 {reviews.length === 0 ? (
                     <p className="text-zinc-500">Aún no hay reseñas para este producto.</p>
@@ -192,8 +198,8 @@ export default async function ComidaPage({ params }: Props) {
                                             <Star
                                                 key={i}
                                                 className={`h-4 w-4 ${i < review.rating
-                                                    ? "fill-yellow-400 text-yellow-400"
-                                                    : "text-zinc-700"
+                                                        ? "fill-yellow-400 text-yellow-400"
+                                                        : "text-zinc-700"
                                                     }`}
                                             />
                                         ))}
@@ -215,6 +221,9 @@ export default async function ComidaPage({ params }: Props) {
                         ))}
                     </div>
                 )}
+
+                {/* Formulario para publicar reseña */}
+                <ReviewForm menuItemId={item.id} />
             </section>
         </div>
     )
