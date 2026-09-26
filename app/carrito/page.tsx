@@ -14,6 +14,7 @@ import {
     ArrowLeft,
     MessageCircle,
 } from "lucide-react"
+import { useEffect } from "react"
 
 const WHATSAPP_NUMBER = "573105332480"
 
@@ -38,6 +39,94 @@ export default function CarritoPage() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [codigoReferido, setCodigoReferido] = useState("")
+    const [formaPago, setFormaPago] = useState<"efectivo" | "nequi" | "llave">("efectivo")
+    const [precioDomicilio, setPrecioDomicilio] = useState(2500)
+    const [nombre, setNombre] = useState("")
+    const [telefono, setTelefono] = useState("")
+
+
+    const [desdeCuenta, setDesdeCuenta] = useState(false) // true si se usaron datos del perfil
+    const [tieneCuenta, setTieneCuenta] = useState(false)
+
+    useEffect(() => {
+        async function cargarPerfil() {
+            const {
+                data: { user },
+            } = await supabase.auth.getUser()
+
+            if (!user) return
+
+            const { data: perfil } = await supabase
+                .from("perfiles")
+                .select("nombre, apellido, whatsapp")
+                .eq("id", user.id)
+                .maybeSingle()
+
+            if (!perfil) return
+
+            setTieneCuenta(true)
+
+            const nombreCompleto = [perfil.nombre, perfil.apellido]
+                .filter(Boolean)
+                .join(" ")
+
+            // WhatsApp sin el 57 para el input (+57 ya se asume o se muestra completo)
+            let wa = perfil.whatsapp || ""
+            if (wa.startsWith("57") && wa.length > 10) {
+                wa = wa.slice(2)
+            }
+
+            setNombre(nombreCompleto)
+            setTelefono(wa)
+            setDesdeCuenta(true)
+        }
+
+        cargarPerfil()
+    }, [])
+
+    function aplicarDatosCuenta() {
+        // Reutiliza la misma lógica si el usuario desmarca y vuelve a marcar
+        supabase.auth.getUser().then(async ({ data: { user } }) => {
+            if (!user) return
+            const { data: perfil } = await supabase
+                .from("perfiles")
+                .select("nombre, apellido, whatsapp")
+                .eq("id", user.id)
+                .maybeSingle()
+
+            if (!perfil) return
+
+            const nombreCompleto = [perfil.nombre, perfil.apellido]
+                .filter(Boolean)
+                .join(" ")
+
+            let wa = perfil.whatsapp || ""
+            if (wa.startsWith("57") && wa.length > 10) wa = wa.slice(2)
+
+            setNombre(nombreCompleto)
+            setTelefono(wa)
+            setDesdeCuenta(true)
+        })
+    }
+
+    // Al montar, leer de Supabase los domicilios
+    useEffect(() => {
+        async function loadDomicilio() {
+            const { data } = await supabase
+                .from("config_app")
+                .select("valor")
+                .eq("clave", "precio_domicilio")
+                .maybeSingle()
+
+            if (data?.valor) {
+                const n = Number(data.valor)
+                if (!Number.isNaN(n)) setPrecioDomicilio(n)
+            }
+        }
+        loadDomicilio()
+    }, [])
+
+    const totalConDomicilio = total + precioDomicilio
 
     function buildWhatsAppMessage() {
         const lineas = items.map(
@@ -49,13 +138,17 @@ export default function CarritoPage() {
             "",
             ...lineas,
             "",
-            `*Total: ${formatPrice(total)}*`,
+            `Subtotal: ${formatPrice(total)}`,
+            `Domicilio: ${formatPrice(precioDomicilio)}`,
+            `*Total: ${formatPrice(totalConDomicilio)}*`,
             "",
+            `Pago: ${formaPago === "efectivo" ? "Efectivo" : formaPago === "nequi" ? "Nequi" : "Llave"}`,
             `Nombre: ${nombre.trim()}`,
             `WhatsApp: ${telefono.trim()}`,
             `Dirección: ${direccion.trim()}`,
             referencia.trim() ? `Referencia: ${referencia.trim()}` : null,
             nota.trim() ? `Nota: ${nota.trim()}` : null,
+            codigoUsado ? `Código referido: ${codigoUsado}` : null,
         ]
             .filter(Boolean)
             .join("\n")
@@ -177,19 +270,22 @@ export default function CarritoPage() {
                     console.warn("Insert pedidos:", insertError.message)
                     await supabase.from("pedidos").insert({
                         cliente_id: user.id,
-                        total,
+                        subtotal: total,
+                        costo_domicilio: precioDomicilio,
+                        total: totalConDomicilio,
+                        forma_pago: formaPago,
                         estado: "pendiente",
-                        notas: [
-                            `Nombre: ${nombre}`,
-                            `Tel: ${telefono}`,
-                            `Dir: ${direccion}`,
-                            referencia && `Ref: ${referencia}`,
-                            nota && `Nota: ${nota}`,
-                            codigoUsado && `Ref código: ${codigoUsado}`,
-                            `Items: ${JSON.stringify(items)}`,
-                        ]
-                            .filter(Boolean)
-                            .join(" | "),
+                        nombre_entrega: nombre.trim(),
+                        telefono: telefono.replace(/\D/g, ""),
+                        direccion: direccion.trim(),
+                        referencia_vivienda: referencia.trim() || null,
+                        nota_adicional: nota.trim() || null,
+                        items: items.map((i) => ({
+                            id: i.id,
+                            name: i.name,
+                            price: i.price,
+                            quantity: i.quantity,
+                        })),
                     })
                 }
             }
@@ -324,7 +420,10 @@ export default function CarritoPage() {
                             <input
                                 required
                                 value={nombre}
-                                onChange={(e) => setNombre(e.target.value)}
+                                onChange={(e) => {
+                                    setNombre(e.target.value)
+                                    setDesdeCuenta(false)
+                                }}
                                 className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-orange-500"
                                 placeholder="Tu nombre"
                             />
@@ -336,11 +435,38 @@ export default function CarritoPage() {
                                 required
                                 type="tel"
                                 value={telefono}
-                                onChange={(e) => setTelefono(e.target.value.replace(/\D/g, ""))}
+                                onChange={(e) => {
+                                    setTelefono(e.target.value.replace(/\D/g, ""))
+                                    setDesdeCuenta(false)
+                                }}
                                 className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-orange-500"
                                 placeholder="3101234567"
                             />
                         </div>
+
+                        {tieneCuenta && (
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                                <input
+                                    type="checkbox"
+                                    checked={desdeCuenta}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            aplicarDatosCuenta()
+                                        } else {
+                                            setDesdeCuenta(false)
+                                            // opcional: no borrar los campos, solo desmarcar
+                                        }
+                                    }}
+                                    className="h-4 w-4 rounded border-zinc-600 bg-zinc-900 text-orange-500 focus:ring-orange-500"
+                                />
+                                <span className="text-xs text-zinc-400">
+                                    Usar nombre y WhatsApp de mi cuenta
+                                    {desdeCuenta && (
+                                        <span className="text-green-400 ml-1">✓ aplicados</span>
+                                    )}
+                                </span>
+                            </label>
+                        )}
 
                         <div>
                             <label className="block text-xs text-zinc-400 mb-1">Dirección *</label>
@@ -392,11 +518,46 @@ export default function CarritoPage() {
                             </p>
                         </div>
 
-                        <div className="border-t border-zinc-800 pt-4 flex justify-between items-center">
-                            <span className="text-zinc-400 text-sm">Total</span>
-                            <span className="text-xl font-black text-orange-500">
-                                {formatPrice(total)}
-                            </span>
+                        <div>
+                            <label className="block text-xs text-zinc-400 mb-2">Forma de pago *</label>
+                            <div className="grid grid-cols-3 gap-2">
+                                {(
+                                    [
+                                        { id: "efectivo", label: "Efectivo" },
+                                        { id: "nequi", label: "Nequi" },
+                                        { id: "llave", label: "Llave" },
+                                    ] as const
+                                ).map((op) => (
+                                    <button
+                                        key={op.id}
+                                        type="button"
+                                        onClick={() => setFormaPago(op.id)}
+                                        className={`h-10 rounded-lg text-sm font-medium border transition-colors ${formaPago === op.id
+                                            ? "border-orange-500 bg-orange-500/15 text-orange-400"
+                                            : "border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-zinc-500"
+                                            }`}
+                                    >
+                                        {op.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="border-t border-zinc-800 pt-4 space-y-2">
+                            <div className="flex justify-between text-sm text-zinc-400">
+                                <span>Subtotal</span>
+                                <span>{formatPrice(total)}</span>
+                            </div>
+                            <div className="flex justify-between text-sm text-zinc-400">
+                                <span>Domicilio</span>
+                                <span>{formatPrice(precioDomicilio)}</span>
+                            </div>
+                            <div className="flex justify-between items-center pt-1">
+                                <span className="text-zinc-300 font-medium">Total</span>
+                                <span className="text-xl font-black text-orange-500">
+                                    {formatPrice(totalConDomicilio)}
+                                </span>
+                            </div>
                         </div>
 
                         {error && <p className="text-red-400 text-sm">{error}</p>}
