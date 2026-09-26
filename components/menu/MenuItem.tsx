@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Flame, Crown } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useCart } from "@/components/cart/CartProvider"
+import { AddToCartButton } from "@/components/cart/AddToCartButton"
 
 interface Props {
   item: {
@@ -26,7 +26,6 @@ export function MenuItem({ item, accent = "orange" }: Props) {
     ? "bg-yellow-500 hover:bg-yellow-600 text-black"
     : "bg-orange-500 hover:bg-orange-600 text-white"
   const flameColor = isYellow ? "fill-yellow-400 text-yellow-400" : "fill-orange-500 text-orange-500"
-  const { addItem } = useCart()
 
   const formattedPrice = new Intl.NumberFormat("es-CO", {
     style: "currency",
@@ -59,55 +58,42 @@ export function MenuItem({ item, accent = "orange" }: Props) {
           </div>
         )}
 
-        <CardContent className="p-5">
-          <div className="flex justify-between items-start gap-3">
-            <div className="flex-1">
-              <h3 className="font-bold text-lg tracking-tight text-white group-hover:text-orange-400 transition-colors">
-                {item.name}
-              </h3>
-              <p className="text-sm text-zinc-400 mt-1.5 leading-relaxed line-clamp-2">
-                {item.description}
-              </p>
-            </div>
-            <span className={`font-black text-xl whitespace-nowrap ${priceColor}`}>
-              {formattedPrice}
-            </span>
-            <button
-              type="button"
-              onClick={() =>
-                addItem({
-                  id: item.id,
-                  name: item.name,
-                  price: item.price, // o el precio que uses
-                  image_url: item.image_url,
-                })
-              }
-              className="..."
-            >
-              Agregar
-            </button>
-          </div>
+        <CardContent className="p-5 flex flex-col gap-3">
+  <div>
+    <h3 className="font-bold text-lg tracking-tight text-white group-hover:text-orange-400 transition-colors">
+      {item.name}
+    </h3>
+    <p className="text-sm text-zinc-400 mt-1.5 leading-relaxed line-clamp-2">
+      {item.description}
+    </p>
+  </div>
 
-          {item.spicyLevel !== undefined && item.spicyLevel > 0 && (
-            <div className="flex items-center gap-1 mt-4">
-              {Array.from({ length: item.spicyLevel }).map((_, i) => (
-                <Flame key={i} className={`h-4 w-4 ${flameColor}`} />
-              ))}
-              <span className="text-xs text-zinc-500 ml-1">
-                {item.spicyLevel === 1 && "Suave"}
-                {item.spicyLevel === 2 && "Medio"}
-                {item.spicyLevel === 3 && "Extremo"}
-              </span>
-            </div>
-          )}
+  {item.spicyLevel !== undefined && item.spicyLevel > 0 && (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: item.spicyLevel }).map((_, i) => (
+        <Flame key={i} className={`h-4 w-4 ${flameColor}`} />
+      ))}
+      <span className="text-xs text-zinc-500 ml-1">
+        {item.spicyLevel === 1 && "Suave"}
+        {item.spicyLevel === 2 && "Medio"}
+        {item.spicyLevel === 3 && "Extremo"}
+      </span>
+    </div>
+  )}
 
-          {!item.image && item.popular && (
-            <Badge className={`mt-4 ${badgeColor} font-bold`}>
-              <Crown className="h-3.5 w-3.5 mr-1" />
-              Popular
-            </Badge>
-          )}
-        </CardContent>
+  <div className="flex items-center justify-between gap-3 mt-auto pt-2">
+    <span className={`font-black text-xl ${priceColor}`}>
+      {formattedPrice}
+    </span>
+    <AddToCartButton
+      id={item.id}
+      name={item.name}
+      price={item.price}
+      image_url={item.image_url ?? item.image}
+      className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-orange-500 hover:bg-orange-400 text-black text-sm font-bold px-4 h-9 transition-colors"
+    />
+  </div>
+</CardContent>
       </Card>
     </Link>
   )

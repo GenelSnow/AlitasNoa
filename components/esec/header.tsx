@@ -2,6 +2,7 @@ import { Flame } from "lucide-react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { AuthButtons } from "./AuthButtons"
+import { CartButton } from "./shopicon"
 
 export async function Header() {
   const supabase = await createClient()
@@ -53,6 +54,7 @@ export async function Header() {
 
           <div className="flex items-center gap-3">
             <AuthButtons nombre={nombre} rol={rol} />
+            <CartButton />
 
             <a
               href="https://wa.me/573105332480"
