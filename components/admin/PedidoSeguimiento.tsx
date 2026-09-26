@@ -62,8 +62,9 @@ export function PedidoSeguimiento({
 
     const formaPago = (pedido.forma_pago || "efectivo") as FormaPago
     const telefono = (pedido.telefono || "").replace(/\D/g, "")
-    const wa = telefono.startsWith("57") ? telefono : `57${telefono}
-    `
+    const waDigits = telefono.startsWith("57") ? telefono : `57${telefono}`
+    const wa = waDigits.trim()
+
     useEffect(() => {
         async function loadConfig() {
             const { data } = await supabase
@@ -129,12 +130,16 @@ export function PedidoSeguimiento({
     }
 
     function enviarWhatsApp() {
-        if (!wa || wa.length < 10) {
+        const numero = wa.replace(/\D/g, "")
+
+        if (!numero || numero.length < 12) {
             toast.error("El pedido no tiene WhatsApp válido")
             return
         }
-        const url = `https://wa.me/${wa}?text=${encodeURIComponent(mensaje)}`
+
+        const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`
         window.open(url, "_blank")
+
         toast.success("WhatsApp abierto", {
             description: "Revisa el mensaje y envíalo al cliente.",
         })

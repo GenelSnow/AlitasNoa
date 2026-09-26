@@ -42,11 +42,12 @@ export default async function AdminPedidosPage() {
       ) : (
         <ul className="space-y-4">
           {pedidos.map((p) => {
-            const cliente = p.perfiles as {
-              nombre: string
-              apellido: string | null
-              whatsapp: string
-            } | null
+            const raw = p.perfiles as
+              | { nombre: string; apellido: string | null; whatsapp: string }
+              | { nombre: string; apellido: string | null; whatsapp: string }[]
+              | null
+
+            const cliente = Array.isArray(raw) ? raw[0] ?? null : raw
 
             return (
               <li

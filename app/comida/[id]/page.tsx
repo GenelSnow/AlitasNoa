@@ -47,13 +47,17 @@ export default async function ComidaPage({ params }: Props) {
         notFound()
     }
 
+    const category = Array.isArray(item.categories)
+        ? item.categories[0]
+        : item.categories
+
     const formattedPrice = new Intl.NumberFormat("es-CO", {
         style: "currency",
         currency: "COP",
         minimumFractionDigits: 0,
     }).format(Number(item.price))
 
-    const isMielMostaza = item.categories?.name?.toLowerCase().includes("miel")
+    const isMielMostaza = category?.name?.toLowerCase().includes("miel")
     const accentColor = isMielMostaza ? "text-yellow-400" : "text-orange-500"
     const flameColor = isMielMostaza ? "fill-yellow-400 text-yellow-400" : "fill-orange-500 text-orange-500"
 
@@ -96,9 +100,9 @@ export default async function ComidaPage({ params }: Props) {
                 {/* Información */}
                 <div className="flex flex-col">
                     <div className="flex items-center gap-3 mb-3">
-                        {item.categories?.name && (
+                        {category?.name && (
                             <Badge variant="outline" className="border-zinc-700 text-zinc-400">
-                                {item.categories.name}
+                                {category.name}
                             </Badge>
                         )}
                         {item.is_popular && (
@@ -198,8 +202,8 @@ export default async function ComidaPage({ params }: Props) {
                                             <Star
                                                 key={i}
                                                 className={`h-4 w-4 ${i < review.rating
-                                                        ? "fill-yellow-400 text-yellow-400"
-                                                        : "text-zinc-700"
+                                                    ? "fill-yellow-400 text-yellow-400"
+                                                    : "text-zinc-700"
                                                     }`}
                                             />
                                         ))}

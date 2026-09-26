@@ -59,41 +59,41 @@ export function MenuItem({ item, accent = "orange" }: Props) {
         )}
 
         <CardContent className="p-5 flex flex-col gap-3">
-  <div>
-    <h3 className="font-bold text-lg tracking-tight text-white group-hover:text-orange-400 transition-colors">
-      {item.name}
-    </h3>
-    <p className="text-sm text-zinc-400 mt-1.5 leading-relaxed line-clamp-2">
-      {item.description}
-    </p>
-  </div>
+          <div>
+            <h3 className="font-bold text-lg tracking-tight text-white group-hover:text-orange-400 transition-colors">
+              {item.name}
+            </h3>
+            <p className="text-sm text-zinc-400 mt-1.5 leading-relaxed line-clamp-2">
+              {item.description}
+            </p>
+          </div>
 
-  {item.spicyLevel !== undefined && item.spicyLevel > 0 && (
-    <div className="flex items-center gap-1">
-      {Array.from({ length: item.spicyLevel }).map((_, i) => (
-        <Flame key={i} className={`h-4 w-4 ${flameColor}`} />
-      ))}
-      <span className="text-xs text-zinc-500 ml-1">
-        {item.spicyLevel === 1 && "Suave"}
-        {item.spicyLevel === 2 && "Medio"}
-        {item.spicyLevel === 3 && "Extremo"}
-      </span>
-    </div>
-  )}
+          {item.spicyLevel !== undefined && item.spicyLevel > 0 && (
+            <div className="flex items-center gap-1">
+              {Array.from({ length: item.spicyLevel }).map((_, i) => (
+                <Flame key={i} className={`h-4 w-4 ${flameColor}`} />
+              ))}
+              <span className="text-xs text-zinc-500 ml-1">
+                {item.spicyLevel === 1 && "Suave"}
+                {item.spicyLevel === 2 && "Medio"}
+                {item.spicyLevel === 3 && "Extremo"}
+              </span>
+            </div>
+          )}
 
-  <div className="flex items-center justify-between gap-3 mt-auto pt-2">
-    <span className={`font-black text-xl ${priceColor}`}>
-      {formattedPrice}
-    </span>
-    <AddToCartButton
-      id={item.id}
-      name={item.name}
-      price={item.price}
-      image_url={item.image_url ?? item.image}
-      className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-orange-500 hover:bg-orange-400 text-black text-sm font-bold px-4 h-9 transition-colors"
-    />
-  </div>
-</CardContent>
+          <div className="flex items-center justify-between gap-3 mt-auto pt-2">
+            <span className={`font-black text-xl ${priceColor}`}>
+              {formattedPrice}
+            </span>
+            <AddToCartButton
+              id={item.id}
+              name={item.name}
+              price={item.price}
+              image_url={item.image_url ?? item.image ?? null}
+              className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-orange-500 hover:bg-orange-400 text-black text-sm font-bold px-4 h-9 transition-colors"
+            />
+          </div>
+        </CardContent>
       </Card>
     </Link>
   )

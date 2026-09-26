@@ -81,7 +81,12 @@ export default async function RecompensasPage() {
         ) : (
           <ul className="space-y-3">
             {referidos.map((r) => {
-              const ref = r.perfiles as { nombre: string; apellido: string | null } | null
+              const raw = r.perfiles as
+                | { nombre: string; apellido: string | null }
+                | { nombre: string; apellido: string | null }[]
+                | null
+
+              const ref = Array.isArray(raw) ? raw[0] ?? null : raw
               return (
                 <li
                   key={r.id}
@@ -96,13 +101,12 @@ export default async function RecompensasPage() {
                     </p>
                   </div>
                   <span
-                    className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-                      r.estado === "completado"
+                    className={`text-xs font-bold px-2.5 py-1 rounded-full ${r.estado === "completado"
                         ? "bg-green-500/15 text-green-400"
                         : r.estado === "pendiente"
                           ? "bg-yellow-500/15 text-yellow-400"
                           : "bg-zinc-700 text-zinc-400"
-                    }`}
+                      }`}
                   >
                     {r.estado === "completado"
                       ? `+${r.puntos_otorgados} pt`
@@ -140,11 +144,10 @@ export default async function RecompensasPage() {
                 </div>
                 <button
                   disabled={!puede}
-                  className={`text-sm font-bold px-4 py-2 rounded-full transition-colors ${
-                    puede
+                  className={`text-sm font-bold px-4 py-2 rounded-full transition-colors ${puede
                       ? "bg-orange-500 hover:bg-orange-400 text-black"
                       : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   {puede ? "Canjear" : "Insuficiente"}
                 </button>
