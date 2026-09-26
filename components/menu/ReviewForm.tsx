@@ -40,56 +40,53 @@ export function ReviewForm({ menuItemId }: Props) {
 
       setUserId(user.id)
 
-      const { data: perfil } = await supabase
-        .from("perfiles")
-        .select("nombre, apellido")
-        .eq("id", user.id)
-        .maybeSingle()
+      // ... cargar nombre del perfil ...
 
-      const nombre = [perfil?.nombre, perfil?.apellido].filter(Boolean).join(" ")
-      setNombreCuenta(nombre || "Cliente")
-
-      // Pedidos completados del usuario
       const { data: pedidos } = await supabase
         .from("pedidos")
-        .select("id, items, estado")
+        .select("id, items, estado, completado_at")
         .eq("cliente_id", user.id)
         .eq("estado", "completado")
+        .order("completado_at", { ascending: false })
 
-      if (!pedidos?.length) {
-        setMotivoBloqueo("sin_pedido")
-        setChecking(false)
-        return
-      }
+      const pedidosConEsteItem = (pedidos || []).filter(
+        (p) =>
+          Array.isArray(p.items) &&
+          p.items.some(
+            (it: { id?: string }) => String(it.id) === String(menuItemId)
+          )
+      )
 
-      // ¿Algún pedido incluye este producto?
-      const probo = pedidos.some((p) => {
-        const items = p.items
-        if (!Array.isArray(items)) return false
-        return items.some(
-          (it: { id?: string }) => String(it.id) === String(menuItemId)
-        )
-      })
-
-      if (!probo) {
+      if (!pedidosConEsteItem.length) {
         setMotivoBloqueo("no_probo")
         setChecking(false)
         return
       }
 
-      // ¿Ya dejó reseña de este producto?
-      const { data: ya } = await supabase
+      // ===== UNA RESEÑA POR PEDIDO COMPLETADO (va aquí) =====
+      const ultimoPedidoConItem = pedidosConEsteItem[0]
+
+      const { data: ultimaResena } = await supabase
         .from("reviews")
-        .select("id")
+        .select("created_at")
         .eq("menu_item_id", menuItemId)
         .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
         .maybeSingle()
 
-      if (ya) {
-        setMotivoBloqueo("ya_reseño")
-        setChecking(false)
-        return
+      if (ultimaResena?.created_at && ultimoPedidoConItem.completado_at) {
+        const tResena = new Date(ultimaResena.created_at).getTime()
+        const tPedido = new Date(ultimoPedidoConItem.completado_at).getTime()
+
+        // Si la última reseña es posterior o igual al último pedido → debe esperar otro pedido
+        if (tPedido <= tResena) {
+          setMotivoBloqueo("espera_pedido")
+          setChecking(false)
+          return
+        }
       }
+      // ===== fin del bloque =====
 
       setPuedeResenar(true)
       setMotivoBloqueo(null)
@@ -116,14 +113,17 @@ export function ReviewForm({ menuItemId }: Props) {
     setLoading(false)
 
     if (error) {
-      toast.error(error.message)
+      toast.error("No se pudo publicar", { description: error.message })
       return
     }
 
-    toast.success("Reseña publicada")
+    toast.success("Reseña publicada", {
+      description: "Gracias por contar cómo te fue esta vez.",
+      duration: 3500,
+    })
+
     setComment("")
-    setPuedeResenar(false)
-    setMotivoBloqueo("ya_reseño")
+    setRating(5)
     router.refresh()
   }
 
@@ -157,10 +157,11 @@ export function ReviewForm({ menuItemId }: Props) {
     )
   }
 
-  if (motivoBloqueo === "ya_reseño") {
+  if (motivoBloqueo === "espera_pedido") {
     return (
       <div className="border border-zinc-800 rounded-2xl p-5 bg-zinc-950/80 text-sm text-zinc-400">
-        Ya publicaste una reseña de este producto. ¡Gracias!
+        Ya reseñaste este producto tras tu último pedido. Cuando vuelvas a
+        pedirlo y lo marquen como completado, podrás contar cómo te fue esta vez.
       </div>
     )
   }
@@ -185,11 +186,10 @@ export function ReviewForm({ menuItemId }: Props) {
           {[1, 2, 3, 4, 5].map((n) => (
             <button key={n} type="button" onClick={() => setRating(n)}>
               <Star
-                className={`h-6 w-6 ${
-                  n <= rating
-                    ? "fill-yellow-400 text-yellow-400"
-                    : "text-zinc-600"
-                }`}
+                className={`h-6 w-6 ${n <= rating
+                  ? "fill-yellow-400 text-yellow-400"
+                  : "text-zinc-600"
+                  }`}
               />
             </button>
           ))}

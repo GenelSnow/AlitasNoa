@@ -26,9 +26,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
           <Toaster
             theme="dark"
-            position="top-center"
+            position="top-right"
             richColors
             closeButton
+            expand={false}
+            visibleToasts={4}
+            toastOptions={{
+              classNames: {
+                toast:
+                  "bg-zinc-950 border border-zinc-800 text-white shadow-lg shadow-black/40",
+                title: "text-white font-semibold",
+                description: "text-zinc-400",
+                success: "border-green-500/40",
+                error: "border-red-500/40",
+                closeButton: "bg-zinc-900 border-zinc-700 text-zinc-300",
+              },
+            }}
           />
         </CartProvider>
       </body>
