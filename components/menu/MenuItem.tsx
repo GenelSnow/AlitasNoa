@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Flame, Crown } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useCart } from "@/components/cart/CartProvider"
 
 interface Props {
   item: {
@@ -25,6 +26,7 @@ export function MenuItem({ item, accent = "orange" }: Props) {
     ? "bg-yellow-500 hover:bg-yellow-600 text-black"
     : "bg-orange-500 hover:bg-orange-600 text-white"
   const flameColor = isYellow ? "fill-yellow-400 text-yellow-400" : "fill-orange-500 text-orange-500"
+  const { addItem } = useCart()
 
   const formattedPrice = new Intl.NumberFormat("es-CO", {
     style: "currency",
@@ -70,6 +72,20 @@ export function MenuItem({ item, accent = "orange" }: Props) {
             <span className={`font-black text-xl whitespace-nowrap ${priceColor}`}>
               {formattedPrice}
             </span>
+            <button
+              type="button"
+              onClick={() =>
+                addItem({
+                  id: item.id,
+                  name: item.name,
+                  price: item.price, // o el precio que uses
+                  image_url: item.image_url,
+                })
+              }
+              className="..."
+            >
+              Agregar
+            </button>
           </div>
 
           {item.spicyLevel !== undefined && item.spicyLevel > 0 && (
