@@ -22,10 +22,9 @@ export default async function AdminPedidosPage() {
     estado,
     notas,
     created_at,
-    codigo_referido_usado,
-    referidor_id,
     nombre_entrega,
     telefono,
+    codigo_referido_usado,
     perfiles:cliente_id ( nombre, apellido, whatsapp )
   `)
     .order("created_at", { ascending: false })

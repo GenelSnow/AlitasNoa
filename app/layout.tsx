@@ -6,7 +6,7 @@ import { Footer } from "@/components/esec/footer"
 import { CartProvider } from "@/components/cart/CartProvider"
 import { Toaster } from "sonner"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"], display: "swap" })
 
 export const metadata: Metadata = {
   title: "AlitasNOA | Alas que te hacen volar",

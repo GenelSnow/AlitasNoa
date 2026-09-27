@@ -89,6 +89,7 @@ export default async function ComidaPage({ params }: Props) {
                             className="object-cover"
                             priority
                             sizes="(max-width: 1024px) 100vw, 50vw"
+                            quality={80}
                         />
                     ) : (
                         <div className="flex items-center justify-center h-full text-zinc-600">

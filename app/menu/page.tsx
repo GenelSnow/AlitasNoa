@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { MenuCategory } from "@/components/menu/MenuCategory"
 
+export const revalidate = 60
+
 export default async function MenuPage() {
   const supabase = await createClient()
 

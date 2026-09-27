@@ -46,7 +46,9 @@ export function MenuItem({ item, accent = "orange" }: Props) {
               alt={item.name}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width: 768px) 100vw, 33vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              loading="lazy"
+              quality={75}
             />
             {item.popular && (
               <Badge className={`absolute top-3 left-3 ${badgeColor} font-bold`}>
