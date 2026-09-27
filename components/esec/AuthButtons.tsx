@@ -10,6 +10,7 @@ import {
   Gift,
   ClipboardList,
   ChevronDown,
+  KeyRound,
 } from "lucide-react"
 
 type Props = {
