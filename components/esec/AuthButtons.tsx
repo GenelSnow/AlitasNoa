@@ -118,7 +118,7 @@ export function AuthButtons({ nombre, rol }: Props) {
           )}
 
           {/* Cambiar contraseña */}
-          <div className="py-1">
+          <div className="py-1 border-t border-zinc-800">
             <Link
               href="/auth/cambiar-clave"
               onClick={() => setOpen(false)}
