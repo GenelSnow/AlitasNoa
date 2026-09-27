@@ -1,4 +1,5 @@
-import { Flame } from "lucide-react"
+
+import Image from "next/image"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { AuthButtons } from "./AuthButtons"
@@ -29,7 +30,16 @@ export async function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2 group shrink-0">
-            <Flame className="h-7 w-7 text-orange-500 fill-orange-500 group-hover:scale-110 transition-transform" />
+            <div className="relative h-9 w-9 overflow-hidden rounded-full border border-orange-500/40">
+              <Image
+                src="https://ljjbgqqxunzqhwofoved.supabase.co/storage/v1/object/public/comida/loogo.jpeg"
+                alt="AlitasNOA"
+                fill
+                className="object-cover"
+                sizes="36px"
+                priority
+              />
+            </div>
             <span className="text-xl md:text-2xl font-black tracking-tighter text-white uppercase">
               Alitas<span className="text-orange-500">NOA</span>
             </span>
