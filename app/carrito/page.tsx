@@ -198,6 +198,8 @@ export default function CarritoPage() {
 
         setLoading(true)
 
+        const waWindow = window.open("about:blank", "_blank")
+
         try {
             const {
                 data: { user },
@@ -278,7 +280,14 @@ export default function CarritoPage() {
 
             // --- WhatsApp ---
             const text = encodeURIComponent(buildWhatsAppMessage(codigoUsado))
-            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, "_blank")
+            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`
+
+            if (waWindow && !waWindow.closed) {
+                waWindow.location.href = url
+            } else {
+                // Fallback si el navegador bloqueó la pestaña
+                window.location.href = url
+            }
 
             toast.success("Pedido listo", {
                 description: "Se abrió WhatsApp con tu mensaje. Envíalo para confirmar.",
@@ -287,6 +296,7 @@ export default function CarritoPage() {
             clearCart()
             router.push("/menu")
         } catch (err) {
+            if (waWindow && !waWindow.closed) waWindow.close()
             setError(err instanceof Error ? err.message : "Error al enviar el pedido")
         } finally {
             setLoading(false)
