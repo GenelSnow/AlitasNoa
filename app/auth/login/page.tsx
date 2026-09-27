@@ -116,6 +116,14 @@ export default function LoginPage() {
                         >
                             {loading ? "Entrando..." : "Iniciar sesión"}
                         </button>
+                        <p className="text-center text-sm">
+                            <Link
+                                href="/auth/cambiar-clave"
+                                className="text-zinc-500 hover:text-orange-400 transition-colors"
+                            >
+                                ¿Olvidaste tu contraseña?
+                            </Link>
+                        </p>
                     </form>
                 </div>
 

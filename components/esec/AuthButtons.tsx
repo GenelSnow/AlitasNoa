@@ -116,6 +116,18 @@ export function AuthButtons({ nombre, rol }: Props) {
             </div>
           )}
 
+          {/* Cambiar contraseña */}
+          <div className="py-1">
+            <Link
+              href="/auth/cambiar-clave"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-900 hover:text-orange-400 transition-colors"
+            >
+              <KeyRound className="h-4 w-4" />
+              Cambiar contraseña
+            </Link>
+          </div>
+
           {/* Cerrar sesión */}
           <div className="py-1 border-t border-zinc-800">
             <button
