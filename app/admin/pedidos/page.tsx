@@ -17,13 +17,17 @@ export default async function AdminPedidosPage() {
   const { data: pedidos } = await supabase
     .from("pedidos")
     .select(`
-      id,
-      total,
-      estado,
-      notas,
-      created_at,
-      perfiles:cliente_id ( nombre, apellido, whatsapp )
-    `)
+    id,
+    total,
+    estado,
+    notas,
+    created_at,
+    codigo_referido_usado,
+    referidor_id,
+    nombre_entrega,
+    telefono,
+    perfiles:cliente_id ( nombre, apellido, whatsapp )
+  `)
     .order("created_at", { ascending: false })
     .limit(50)
 
@@ -83,6 +87,12 @@ export default async function AdminPedidosPage() {
                   >
                     {p.estado}
                   </span>
+
+                  {p.codigo_referido_usado && (
+                    <span className="text-xs text-yellow-400 ml-2">
+                      Ref: {p.codigo_referido_usado}
+                    </span>
+                  )}
                 </div>
 
                 <Link

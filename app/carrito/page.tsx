@@ -203,24 +203,22 @@ export default function CarritoPage() {
                 data: { user },
             } = await supabase.auth.getUser()
 
-            let referidorId: string | null = null
             let codigoUsado: string | null = null
+            let referidorId: string | null = null
 
-            // --- Código de referido (opcional) ---
+            // Código opcional — NO bloquea el pedido
             if (codigoReferido.trim()) {
-                const codigo = codigoReferido.trim().toUpperCase()
-
                 if (!user) {
                     setError("Inicia sesión para usar un código de referido")
                     setLoading(false)
                     return
                 }
 
-                const { data: rows, error: refError } = await supabase.rpc(
-                    "buscar_referidor",
-                    { p_codigo: codigo }
-                )
+                const codigo = codigoReferido.trim().toUpperCase()
 
+                const { data: rows, error: refError } = await supabase.rpc("buscar_referidor", {
+                    p_codigo: codigo,
+                })
                 const referidor = rows?.[0]
 
                 if (refError || !referidor) {
@@ -235,40 +233,11 @@ export default function CarritoPage() {
                     return
                 }
 
-                const { data: yaReferido } = await supabase
-                    .from("referidos")
-                    .select("id")
-                    .eq("referido_id", user.id)
-                    .maybeSingle()
-
-                if (yaReferido) {
-                    setError("Ya tienes un código de referido aplicado en tu cuenta")
-                    setLoading(false)
-                    return
-                }
-
-                const { error: insertRefError } = await supabase.from("referidos").insert({
-                    referidor_id: referidor.id,
-                    referido_id: user.id,
-                    codigo_usado: codigo,
-                    estado: "pendiente",
-                })
-
-                if (insertRefError) {
-                    setError(insertRefError.message)
-                    setLoading(false)
-                    return
-                }
-
-                await supabase
-                    .from("perfiles")
-                    .update({ referido_por: referidor.id })
-                    .eq("id", user.id)
-
                 codigoUsado = codigo
+                referidorId = referidor.id
             }
 
-            // --- Guardar pedido (con domicilio y forma de pago) ---
+            // Pedido: TODOS los logueados, con o sin código
             if (user) {
                 const { error: insertError } = await supabase.from("pedidos").insert({
                     cliente_id: user.id,
@@ -276,7 +245,7 @@ export default function CarritoPage() {
                     costo_domicilio: precioDomicilio,
                     total: totalConDomicilio,
                     forma_pago: formaPago,
-                    estado: "pendiente",
+                    estado: "ordenado", // o "pendiente" si aún no migraste estados
                     nombre_entrega: nombre.trim(),
                     telefono: telefono.replace(/\D/g, ""),
                     direccion: direccion.trim(),
@@ -289,6 +258,9 @@ export default function CarritoPage() {
                         quantity: i.quantity,
                     })),
                     notas: nota.trim() || null,
+                    // Solo si usó código:
+                    codigo_referido_usado: codigoUsado,
+                    referidor_id: referidorId,
                 })
 
                 if (insertError) {
@@ -297,6 +269,11 @@ export default function CarritoPage() {
                     setLoading(false)
                     return
                 }
+            } else {
+                // Opcional: avisar que sin cuenta no queda en el panel admin
+                toast.message("Pedido por WhatsApp", {
+                    description: "Sin iniciar sesión el pedido no se guarda en el panel. Solo se envía por WhatsApp.",
+                })
             }
 
             // --- WhatsApp ---
