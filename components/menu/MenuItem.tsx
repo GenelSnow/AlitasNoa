@@ -6,16 +6,19 @@ import Link from "next/link"
 import { AddToCartButton } from "@/components/cart/AddToCartButton"
 
 interface Props {
-  item: {
-    id: string
-    name: string
-    description: string
-    price: number
-    spicyLevel?: number
-    popular?: boolean
-    image?: string
-  }
+  item: MenuItemData
   accent?: "orange" | "yellow"
+}
+
+type MenuItemData = {
+  id: string
+  name: string
+  description: string
+  price: number
+  spicyLevel?: number
+  popular?: boolean
+  image?: string
+  image_url?: string | null  // añadir esto
 }
 
 export function MenuItem({ item, accent = "orange" }: Props) {
@@ -89,7 +92,7 @@ export function MenuItem({ item, accent = "orange" }: Props) {
               id={item.id}
               name={item.name}
               price={item.price}
-              image_url={item.image ?? null}
+              image_url={item.image_url ?? item.image ?? null}
               className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-orange-500 hover:bg-orange-400 text-black text-sm font-bold px-4 h-9 transition-colors"
             />
           </div>
