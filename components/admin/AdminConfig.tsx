@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
+import { AdminHorario } from "@/components/admin/AdminHorario"
 
 type Row = { clave: string; valor: string }
 
@@ -64,6 +65,7 @@ export function AdminConfig() {
           />
         </div>
       ))}
+      <AdminHorario />
       <button
         type="button"
         onClick={save}
