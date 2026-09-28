@@ -40,7 +40,16 @@ export function ReviewForm({ menuItemId }: Props) {
 
       setUserId(user.id)
 
-      // ... cargar nombre del perfil ...
+      // Cargar perfil y pedidos del usuario para determinar si puede reseñar el producto
+
+      const { data: perfil } = await supabase
+        .from("perfiles")
+        .select("nombre, apellido")
+        .eq("id", user.id)
+        .maybeSingle()
+
+      const nombre = [perfil?.nombre, perfil?.apellido].filter(Boolean).join(" ")
+      setNombreCuenta(nombre || "Cliente")
 
       const { data: pedidos } = await supabase
         .from("pedidos")
@@ -98,13 +107,23 @@ export function ReviewForm({ menuItemId }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!userId || !nombreCuenta) return
+
+    if (!userId) {
+      toast.error("Debes iniciar sesión para reseñar")
+      return
+    }
+
+    const autor = (nombreCuenta || "Cliente").trim()
+    if (!autor) {
+      toast.error("No se pudo obtener el nombre de tu cuenta")
+      return
+    }
 
     setLoading(true)
 
     const { error } = await supabase.from("reviews").insert({
       menu_item_id: menuItemId,
-      author_name: nombreCuenta,
+      author_name: autor,
       rating,
       comment: comment.trim() || null,
       user_id: userId,
@@ -119,9 +138,7 @@ export function ReviewForm({ menuItemId }: Props) {
 
     toast.success("Reseña publicada", {
       description: "Gracias por contar cómo te fue esta vez.",
-      duration: 3500,
     })
-
     setComment("")
     setRating(5)
     router.refresh()
