@@ -6,6 +6,7 @@ import { getPerfil, esStaff } from "@/lib/perfil"
 import Link from "next/link";
 import { CompletarPedidoButton } from "@/components/admin/CompletarPedidoButton"
 import { estiloEstado } from "@/lib/pedido-mensajes"
+import { formatFechaHora } from "@/lib/fechas"
 
 
 export default async function AdminPedidosPage() {
@@ -75,7 +76,7 @@ export default async function AdminPedidosPage() {
                       minimumFractionDigits: 0,
                     }).format(Number(p.total))}
                     {" · "}
-                    {new Date(p.created_at).toLocaleString("es-CO")}
+                    {formatFechaHora(p.created_at)}
                   </p>
                   {p.notas && (
                     <p className="text-xs text-zinc-500 mt-1">Nota: {p.notas}</p>
