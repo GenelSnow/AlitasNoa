@@ -24,7 +24,7 @@ export default async function Home() {
           </h1>
 
           <p className="mt-6 text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-            Las mejores alitas de la ciudad. Clásicas, Miel Mostaza y mucho más.
+            Las mejores alitas de Baranoa Atlantico📍. Clásicas, Miel Mostaza y mucho más.
             Preparadas al momento con salsas caseras.
           </p>
 
