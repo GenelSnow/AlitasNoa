@@ -143,17 +143,16 @@ export function PedidoSeguimiento({
                 })
             }
         } else {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from("pedidos")
                 .update({ estado })
                 .eq("id", pedido.id)
+                .select("id, estado")
+                .maybeSingle()
 
-            if (error) {
-                toast.error(error.message)
-                setLoading(false)
-                return
-            }
-            toast.success("Estado actualizado", { description: ESTADOS.find((e) => e.value === estado)?.label })
+            if (error) toast.error(error.message)
+            else if (!data) toast.error("Sin permiso o fila no actualizada")
+            else toast.success("Estado actualizado: " + data.estado)
         }
 
         setLoading(false)
