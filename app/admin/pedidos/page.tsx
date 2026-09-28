@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server"
 import { getPerfil, esStaff } from "@/lib/perfil"
 import Link from "next/link";
 import { CompletarPedidoButton } from "@/components/admin/CompletarPedidoButton"
+import { estiloEstado } from "@/lib/pedido-mensajes"
 
 
 export default async function AdminPedidosPage() {
@@ -79,16 +80,17 @@ export default async function AdminPedidosPage() {
                   {p.notas && (
                     <p className="text-xs text-zinc-500 mt-1">Nota: {p.notas}</p>
                   )}
-                  <span
-                    className={`inline-block mt-2 text-xs font-bold px-2 py-0.5 rounded-full ${p.estado === "completado"
-                      ? "bg-green-500/15 text-green-400"
-                      : p.estado === "pendiente"
-                        ? "bg-yellow-500/15 text-yellow-400"
-                        : "bg-zinc-700 text-zinc-300"
-                      }`}
-                  >
-                    {p.estado}
-                  </span>
+                  {(() => {
+                    const e = estiloEstado(p.estado)
+                    return (
+                      <span
+                        className={`inline-flex items-center gap-1.5 mt-2 text-xs font-bold px-2.5 py-1 rounded-full ${e.className}`}
+                      >
+                        <span aria-hidden>{e.emoji}</span>
+                        {e.label}
+                      </span>
+                    )
+                  })()}
                 </div>
 
                 <Link

@@ -34,6 +34,12 @@ type Pedido = {
     nota_adicional: string | null
     items: { id?: string; name: string; price: number; quantity: number }[] | null
     created_at: string
+    codigo_referido_usado?: string | null
+    referidor_id?: string | null
+    referidor?:
+    | { nombre: string; apellido: string | null; codigo_referido: string | null; whatsapp: string | null }
+    | { nombre: string; apellido: string | null; codigo_referido: string | null; whatsapp: string | null }[]
+    | null
 }
 
 function formatPrice(n: number) {
@@ -198,6 +204,34 @@ export function PedidoSeguimiento({
                     <span className="text-zinc-500">Pago:</span>{" "}
                     {formaPago === "efectivo" ? "Efectivo" : formaPago === "nequi" ? "Nequi" : "Llave"}
                 </p>
+
+                {/* Código de referido */}
+                {pedido.codigo_referido_usado && (
+                    <p className="text-sm text-zinc-300">
+                        <span className="text-zinc-500">Código de referido:</span>{" "}
+                        <span className="text-yellow-400 font-mono font-semibold">
+                            {pedido.codigo_referido_usado}
+                        </span>
+                        {(() => {
+                            const raw = pedido.referidor
+                            const ref = Array.isArray(raw) ? raw[0] : raw
+                            if (!ref) return null
+                            const nombreRef = [ref.nombre, ref.apellido].filter(Boolean).join(" ")
+                            return (
+                                <span className="text-zinc-400">
+                                    {" "}
+                                    → corresponde a <span className="text-white font-medium">{nombreRef}</span>
+                                    {ref.whatsapp ? ` (${ref.whatsapp})` : ""}
+                                </span>
+                            )
+                        })()}
+                    </p>
+                )}
+
+                {!pedido.codigo_referido_usado && (
+                    <p className="text-sm text-zinc-500">Sin código de referido</p>
+                )}
+
                 <p className="text-sm text-orange-400 font-bold">
                     Total: {formatPrice(Number(pedido.total))}
                 </p>
