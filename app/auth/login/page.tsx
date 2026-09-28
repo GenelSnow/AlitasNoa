@@ -115,7 +115,7 @@ export default function LoginPage() {
                             className="w-full h-11 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-bold transition-colors disabled:opacity-50"
                         >
                             {loading ? "Entrando..." : "Iniciar sesión"}
-                        </button>
+                        </button> 
                         <p className="text-center text-sm">
                             <Link
                                 href="/auth/cambiar-clave"

@@ -11,6 +11,8 @@ import {
   ClipboardList,
   ChevronDown,
   KeyRound,
+  Settings,
+  Lock,
 } from "lucide-react"
 
 type Props = {
@@ -105,7 +107,7 @@ export function AuthButtons({ nombre, rol }: Props) {
 
           {/* Opciones de staff */}
           {esStaff && (
-            <div className="py-1 border-t border-zinc-800">
+            <>
               <Link
                 href="/admin/pedidos"
                 onClick={() => setOpen(false)}
@@ -114,7 +116,16 @@ export function AuthButtons({ nombre, rol }: Props) {
                 <ClipboardList className="h-4 w-4" />
                 Pedidos
               </Link>
-            </div>
+
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-900 hover:text-green-400 transition-colors"
+              >
+                <Settings className="h-4 w-4" />
+                Administración
+              </Link>
+            </>
           )}
 
           {/* Cambiar contraseña */}
