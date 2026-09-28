@@ -19,17 +19,25 @@ export default async function PedidoDetallePage({ params }: Props) {
   const { data: pedido } = await supabase
     .from("pedidos")
     .select(`
-    id,
-    total,
-    estado,
-    notas,
-    created_at,
-    nombre_entrega,
-    telefono,
-    codigo_referido_usado,
-    cliente_id,
-    perfiles:cliente_id ( nombre, apellido, whatsapp )
-  `)
+      id,
+      total,
+      subtotal,
+      costo_domicilio,
+      forma_pago,
+      estado,
+      nombre_entrega,
+      telefono,
+      direccion,
+      referencia_vivienda,
+      nota_adicional,
+      notas,
+      items,
+      codigo_referido_usado,
+      referidor_id,
+      cliente_id,
+      created_at,
+      completado_at
+    `)
     .eq("id", id)
     .single()
 
