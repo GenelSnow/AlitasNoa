@@ -16,7 +16,7 @@ const ESTADOS: { value: EstadoPedido; label: string }[] = [
     { value: "cancelado", label: "Cancelado" },
 ]
 
-const DEMORAS_COCINA = ["10-15 minutos", "15-20 minutos", "20-30 minutos", "30-40 minutos"]
+const DEMORAS_COCINA = ["5-10 minutos", "10-15 minutos", "15-20 minutos", "20-30 minutos", "30-40 minutos"]
 const DEMORAS_ENVIO = ["5-10 minutos", "10-15 minutos", "15-25 minutos", "25-35 minutos"]
 
 
