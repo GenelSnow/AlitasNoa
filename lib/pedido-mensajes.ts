@@ -29,22 +29,25 @@ export function armarMensajePedido(o: Opts): string {
                 "Pagos en *efectivo*: tu orden ya puede prepararse.",
                 "El cobro se hace al entregar."
             )
+            // Sin tiempo estimado aquí
         } else {
             const medio = o.formaPago === "nequi" ? "Nequi" : "Llave"
             const numero =
-                o.formaPago === "nequi"
-                    ? o.nequiNumero || "—"
-                    : o.llaveNumero || "—"
+                o.formaPago === "nequi" ? o.nequiNumero || "—" : o.llaveNumero || "—"
 
             lineas.push(
                 "",
                 `Pagos por *${medio}*: envía el pago al número *${numero}* y respóndenos con el *comprobante* (anticipo).`,
                 "Tu orden *comenzará a prepararse* cuando el pago se confirme con éxito."
             )
-        }
 
-        if (o.demoraCocina) {
-            lineas.push("", `Tiempo estimado de preparación: *${o.demoraCocina}*.`)
+            // Tiempo de espera del comprobante (reutilizamos demoraCocina como selector de espera)
+            if (o.demoraCocina) {
+                lineas.push(
+                    "",
+                    `Tiempo estimado para validar tu comprobante: *${o.demoraCocina}*.`
+                )
+            }
         }
 
         lineas.push("", "¡Gracias por preferirnos!")

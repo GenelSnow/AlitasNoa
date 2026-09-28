@@ -44,6 +44,7 @@ function formatPrice(n: number) {
     }).format(n)
 }
 
+
 export function PedidoSeguimiento({
     pedido,
     validadorId,
@@ -59,6 +60,33 @@ export function PedidoSeguimiento({
     const [loading, setLoading] = useState(false)
     const supabase = createClient()
     const router = useRouter()
+
+    const estadoGuardado = pedido.estado as EstadoPedido
+
+    function estadosPermitidos(actual: EstadoPedido): EstadoPedido[] {
+        switch (actual) {
+            case "ordenado":
+            case "pendiente":
+                return ["ordenado", "procesando", "cancelado"]
+            case "procesando":
+                return ["procesando", "en_envio", "cancelado"]
+            case "en_envio":
+                return ["en_envio", "completado", "cancelado"]
+            case "completado":
+                return ["completado"]
+            case "cancelado":
+                return ["cancelado"]
+            default:
+                return ["ordenado", "procesando", "en_envio", "completado", "cancelado"]
+        }
+    }
+
+    const bloqueado =
+        estadoGuardado === "completado" || estadoGuardado === "cancelado"
+
+    const opciones = ESTADOS.filter((e) =>
+        estadosPermitidos(estadoGuardado).includes(e.value)
+    )
 
     const formaPago = (pedido.forma_pago || "efectivo") as FormaPago
     const telefono = (pedido.telefono || "").replace(/\D/g, "")
@@ -85,7 +113,10 @@ export function PedidoSeguimiento({
         estado,
         formaPago,
         demoraCocina:
-            estado === "ordenado" || estado === "procesando" ? demoraCocina : undefined,
+            estado === "procesando" ||
+                (estado === "ordenado" && formaPago !== "efectivo")
+                ? demoraCocina
+                : undefined,
         demoraRepartidor: estado === "en_envio" ? demoraRepartidor : undefined,
         nequiNumero,
         llaveNumero,
@@ -190,9 +221,10 @@ export function PedidoSeguimiento({
                     <select
                         value={estado}
                         onChange={(e) => setEstado(e.target.value as EstadoPedido)}
-                        className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm"
+                        disabled={bloqueado}
+                        className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm disabled:opacity-50"
                     >
-                        {ESTADOS.map((e) => (
+                        {opciones.map((e) => (
                             <option key={e.value} value={e.value}>
                                 {e.label}
                             </option>
@@ -200,7 +232,24 @@ export function PedidoSeguimiento({
                     </select>
                 </div>
 
-                {(estado === "ordenado" || estado === "procesando") && (
+                {estado === "ordenado" && formaPago !== "efectivo" && (
+                    <div>
+                        <label className="text-xs text-zinc-400 mb-1 block">
+                            Tiempo de espera del comprobante
+                        </label>
+                        <select
+                            value={demoraCocina}
+                            onChange={(e) => setDemoraCocina(e.target.value)}
+                            className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm"
+                        >
+                            {DEMORAS_COCINA.map((d) => (
+                                <option key={d} value={d}>{d}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+
+                {estado === "procesando" && (
                     <div>
                         <label className="text-xs text-zinc-400 mb-1 block">
                             Demora preparación
@@ -211,9 +260,7 @@ export function PedidoSeguimiento({
                             className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm"
                         >
                             {DEMORAS_COCINA.map((d) => (
-                                <option key={d} value={d}>
-                                    {d}
-                                </option>
+                                <option key={d} value={d}>{d}</option>
                             ))}
                         </select>
                     </div>
@@ -241,7 +288,7 @@ export function PedidoSeguimiento({
                 <button
                     type="button"
                     onClick={guardarEstado}
-                    disabled={loading}
+                    disabled={loading || bloqueado || estado === estadoGuardado}
                     className="w-full h-10 rounded-full bg-orange-500 hover:bg-orange-400 text-black font-bold text-sm disabled:opacity-50"
                 >
                     {loading ? "Guardando..." : "Guardar estado"}
