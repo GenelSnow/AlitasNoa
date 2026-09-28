@@ -25,7 +25,7 @@ export default async function AdminPage() {
         </Link>
       </div>
 
-      <AdminTabs />
+      <AdminTabs rol={perfil.rol} />
     </div>
   )
 }
