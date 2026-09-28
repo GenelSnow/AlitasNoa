@@ -1,4 +1,5 @@
 export type EstadoPedido =
+    | "pendiente"
     | "ordenado"
     | "procesando"
     | "en_envio"
