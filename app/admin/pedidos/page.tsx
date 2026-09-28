@@ -59,11 +59,14 @@ export default async function AdminPedidosPage() {
               >
                 <div>
                   <p className="font-bold text-white">
-                    {cliente?.nombre} {cliente?.apellido}
+                    {p.nombre_entrega || cliente?.nombre || "Cliente"}
                   </p>
                   <p className="text-sm text-zinc-400">
-                    WhatsApp: {cliente?.whatsapp}
+                    WhatsApp: {p.telefono || cliente?.whatsapp || "—"}
                   </p>
+                  {p.codigo_referido_usado && (
+                    <span className="text-xs text-yellow-400">Ref: {p.codigo_referido_usado}</span>
+                  )}
                   <p className="text-sm text-zinc-500 mt-1">
                     {new Intl.NumberFormat("es-CO", {
                       style: "currency",
@@ -86,12 +89,6 @@ export default async function AdminPedidosPage() {
                   >
                     {p.estado}
                   </span>
-
-                  {p.codigo_referido_usado && (
-                    <span className="text-xs text-yellow-400 ml-2">
-                      Ref: {p.codigo_referido_usado}
-                    </span>
-                  )}
                 </div>
 
                 <Link
