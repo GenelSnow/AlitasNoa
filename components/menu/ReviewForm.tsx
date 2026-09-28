@@ -141,6 +141,8 @@ export function ReviewForm({ menuItemId }: Props) {
     })
     setComment("")
     setRating(5)
+    setPuedeResenar(false)
+    setMotivoBloqueo("espera_pedido")
     router.refresh()
   }
 
