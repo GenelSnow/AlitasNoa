@@ -129,7 +129,11 @@ export default function CarritoClient({ modoReserva = false }: Props) {
 
     const totalConDomicilio = total + precioDomicilio
 
-    function buildWhatsAppMessage(codigoUsado?: string | null) {
+    function buildWhatsAppMessage(
+        codigoUsado?: string | null,
+        comoReserva?: boolean
+    ) {
+        const esReservaMsg = comoReserva ?? modoReserva
         const lineasItems = items
             .map(
                 (i) =>
@@ -145,7 +149,7 @@ export default function CarritoClient({ modoReserva = false }: Props) {
                     : "Llave"
 
         // ---------- RESERVA (local cerrado) ----------
-        if (modoReserva) {
+        if (esReservaMsg) {
             const partes: string[] = [
                 "*RESERVA AlitasNOA*",
                 "------------------------------",
@@ -237,7 +241,7 @@ export default function CarritoClient({ modoReserva = false }: Props) {
 
         return partes.join("\n")
     }
-    
+
     async function handleEnviar(e: React.FormEvent) {
         e.preventDefault()
         setError(null)
@@ -273,11 +277,8 @@ export default function CarritoClient({ modoReserva = false }: Props) {
                 } catch { }
             }
 
-            if (!estaAbierto(horario, "America/Bogota").abierto) {
-                if (waWindow && !waWindow.closed) waWindow.close()
-                router.replace("/reservar")
-                return
-            }
+            const cerradoAhora = !estaAbierto(horario, "America/Bogota").abierto
+            const esReserva = modoReserva || cerradoAhora
 
             // Referido solo si hay código + sesión (opcional)
             let codigoUsado: string | null = null
@@ -316,13 +317,13 @@ export default function CarritoClient({ modoReserva = false }: Props) {
 
             // ===== SIEMPRE guardar en admin (logueado o no) =====
             const { error: insertError } = await supabase.from("pedidos").insert({
-                cliente_id: user?.id ?? null, // null si es invitado
+                cliente_id: user?.id ?? null,
                 subtotal: total,
                 costo_domicilio: precioDomicilio,
                 total: totalConDomicilio,
                 forma_pago: formaPago,
-                estado: modoReserva ? "reservado" : "ordenado",
-                es_reserva: modoReserva,
+                estado: esReserva ? "reservado" : "ordenado",
+                es_reserva: esReserva,
                 nombre_entrega: nombre.trim(),
                 telefono: telefono.replace(/\D/g, ""),
                 direccion: direccion.trim(),
@@ -350,7 +351,7 @@ export default function CarritoClient({ modoReserva = false }: Props) {
 
 
             // --- WhatsApp ---
-            const text = encodeURIComponent(buildWhatsAppMessage(codigoUsado))
+            const text = encodeURIComponent(buildWhatsAppMessage(codigoUsado, esReserva))
             const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`
 
             if (waWindow && !waWindow.closed) {
@@ -360,8 +361,10 @@ export default function CarritoClient({ modoReserva = false }: Props) {
                 window.location.href = url
             }
 
-            toast.success("Pedido listo", {
-                description: "Se abrió WhatsApp con tu mensaje. Envíalo para confirmar.",
+            toast.success(esReserva ? "Reserva registrada" : "Pedido listo", {
+                description: esReserva
+                    ? "Se abrió WhatsApp con tu reserva. Envíalo para avisar al local."
+                    : "Se abrió WhatsApp con tu mensaje. Envíalo para confirmar.",
             })
 
             clearCart()
