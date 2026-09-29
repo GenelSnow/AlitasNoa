@@ -153,16 +153,31 @@ export function PedidoSeguimiento({
                 })
             }
         } else {
+            const payload: { estado: string; es_reserva?: boolean } = { estado }
+
+            // Si sale de reservado hacia pedido real
+            if (estado !== "reservado") {
+                payload.es_reserva = false
+            }
+
             const { data, error } = await supabase
                 .from("pedidos")
-                .update({ estado })
+                .update(payload)
                 .eq("id", pedido.id)
-                .select("id, estado")
+                .select("id, estado, es_reserva")
                 .maybeSingle()
 
-            if (error) toast.error(error.message)
-            else if (!data) toast.error("Sin permiso o fila no actualizada")
-            else toast.success("Estado actualizado: " + data.estado)
+            if (error) {
+                toast.error(error.message)
+                setLoading(false)
+                return
+            }
+            if (!data) {
+                toast.error("Sin permiso o fila no actualizada")
+                setLoading(false)
+                return
+            }
+            toast.success("Estado actualizado: " + data.estado)
         }
 
         setLoading(false)

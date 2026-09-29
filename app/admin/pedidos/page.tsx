@@ -27,9 +27,7 @@ export default async function AdminPedidosPage() {
 
   const lista = (pedidos || []) as PedidoRow[]
 
-  const reservas = lista.filter(
-    (p) => p.estado === "reservado" || p.es_reserva === true
-  )
+  const reservas = lista.filter((p) => p.estado === "reservado")
 
   const activos = lista.filter(
     (p) => p.estado !== "reservado" && p.estado !== "cancelado"
