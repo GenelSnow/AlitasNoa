@@ -1,4 +1,5 @@
 export type EstadoPedido =
+    | "reservado"
     | "pendiente"
     | "ordenado"
     | "procesando"
@@ -20,6 +21,20 @@ type Opts = {
 
 export function armarMensajePedido(o: Opts): string {
     const saludo = `Hola ${o.nombre}, te escribimos de *AlitasNOA*.`
+
+    if (o.estado === "reservado") {
+        return [
+            `Hola ${o.nombre}, te escribimos de *AlitasNOA*.`,
+            "",
+            "¡Ya estamos *abiertos*!",
+            "Tienes una *reserva* con nosotros.",
+            "",
+            "¿Confirmas que quieres que preparemos tu pedido y le demos seguimiento?",
+            "Responde *SÍ* para confirmar o *NO* si deseas cancelar.",
+            "",
+            "¡Gracias!",
+        ].join("\n")
+    }
 
     if (o.estado === "ordenado") {
         const lineas = [saludo, "", "Recibimos tu pedido correctamente."]

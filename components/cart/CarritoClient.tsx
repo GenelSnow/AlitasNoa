@@ -351,7 +351,7 @@ export default function CarritoClient({ modoReserva = false }: Props) {
 
 
             // --- WhatsApp ---
-            const text = encodeURIComponent(buildWhatsAppMessage(codigoUsado, esReserva))
+            const text = encodeURIComponent(buildWhatsAppMessage(codigoUsado))
             const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`
 
             if (waWindow && !waWindow.closed) {

@@ -9,6 +9,7 @@ import { MessageCircle } from "lucide-react"
 import { useEffect } from "react"
 
 const ESTADOS: { value: EstadoPedido; label: string }[] = [
+    { value: "reservado", label: "Reservado" },
     { value: "ordenado", label: "Ordenado" },
     { value: "procesando", label: "Procesando" },
     { value: "en_envio", label: "En envío" },
@@ -71,9 +72,9 @@ export function PedidoSeguimiento({
 
     function estadosPermitidos(actual: EstadoPedido): EstadoPedido[] {
         switch (actual) {
-            case "ordenado":
             case "reservado":
                 return ["reservado", "ordenado", "cancelado"]
+            case "ordenado":
             case "pendiente":
                 return ["ordenado", "procesando", "cancelado"]
             case "procesando":
@@ -133,19 +134,6 @@ export function PedidoSeguimiento({
     async function guardarEstado() {
         setLoading(true)
 
-        if (o.estado === "reservado") {
-            return [
-                `Hola ${o.nombre}, te escribimos de *AlitasNOA*.`,
-                "",
-                "¡Ya estamos *abiertos*!",
-                "Tienes una *reserva* con nosotros.",
-                "",
-                "¿Confirmas que quieres que preparemos tu pedido y le demos seguimiento?",
-                "Responde *SÍ* para confirmar o *NO* si deseas cancelar.",
-                "",
-                "¡Gracias!",
-            ].join("\n")
-        }
 
         if (estado === "completado") {
             const { error } = await supabase.rpc("completar_pedido", {
