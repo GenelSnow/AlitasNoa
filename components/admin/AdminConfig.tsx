@@ -42,7 +42,7 @@ export function AdminConfig() {
         if (row.clave === "horario_semana" && row.valor) {
           try {
             setHorario({ ...HORARIO_DEFAULT, ...JSON.parse(row.valor) })
-          } catch {}
+          } catch { }
         }
       })
       setParams(next)
@@ -97,7 +97,7 @@ export function AdminConfig() {
     "w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-orange-500"
 
   return (
-    <div className="space-y-6 max-w-lg">
+    <div className="space-y-6 max-w-lg w-full mx-auto overflow-x-hidden px-1">
       {/* Parámetros */}
       <div className="border border-zinc-800 rounded-2xl p-5 bg-zinc-950/80 space-y-4">
         <h2 className="font-bold text-white text-lg">Parámetros</h2>
@@ -122,11 +122,10 @@ export function AdminConfig() {
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-bold text-white text-lg">Horario del local</h2>
           <span
-            className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-              estado.abierto
+            className={`text-xs font-bold px-2.5 py-1 rounded-full ${estado.abierto
                 ? "bg-green-500/15 text-green-400"
                 : "bg-red-500/15 text-red-400"
-            }`}
+              }`}
           >
             Ahora: {estado.abierto ? "Abierto" : "Cerrado"}
           </span>
@@ -137,31 +136,37 @@ export function AdminConfig() {
           return (
             <div
               key={key}
-              className="grid grid-cols-[1fr_auto_auto_auto] gap-2 items-center border border-zinc-800 rounded-xl px-3 py-2"
+              className="flex flex-col gap-2 border border-zinc-800 rounded-xl px-3 py-3 sm:flex-row sm:items-center sm:gap-3"
             >
-              <label className="flex items-center gap-2 text-sm text-white">
+              {/* Día */}
+              <label className="flex items-center gap-2 text-sm text-white shrink-0 sm:w-28">
                 <input
                   type="checkbox"
                   checked={d.abierto}
                   onChange={(e) => patchDia(key, "abierto", e.target.checked)}
+                  className="h-4 w-4 rounded"
                 />
                 {label}
               </label>
-              <input
-                type="time"
-                value={d.desde}
-                disabled={!d.abierto}
-                onChange={(e) => patchDia(key, "desde", e.target.value)}
-                className="h-9 px-2 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm disabled:opacity-40"
-              />
-              <span className="text-zinc-500 text-xs">a</span>
-              <input
-                type="time"
-                value={d.hasta}
-                disabled={!d.abierto}
-                onChange={(e) => patchDia(key, "hasta", e.target.value)}
-                className="h-9 px-2 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm disabled:opacity-40"
-              />
+
+              {/* Horas: en móvil ocupan todo el ancho, en desktop en fila */}
+              <div className="flex items-center gap-2 w-full min-w-0 sm:flex-1 sm:justify-end">
+                <input
+                  type="time"
+                  value={d.desde}
+                  disabled={!d.abierto}
+                  onChange={(e) => patchDia(key, "desde", e.target.value)}
+                  className="h-9 min-w-0 flex-1 max-w-[9rem] px-2 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm disabled:opacity-40"
+                />
+                <span className="text-zinc-500 text-xs shrink-0">a</span>
+                <input
+                  type="time"
+                  value={d.hasta}
+                  disabled={!d.abierto}
+                  onChange={(e) => patchDia(key, "hasta", e.target.value)}
+                  className="h-9 min-w-0 flex-1 max-w-[9rem] px-2 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm disabled:opacity-40"
+                />
+              </div>
             </div>
           )
         })}
