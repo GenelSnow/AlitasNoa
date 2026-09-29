@@ -4,6 +4,7 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { AuthButtons } from "./AuthButtons"
 import { CartButton } from "./shopicon"
+import { EstadoLocal } from "@/components/esec/EstadoLocal"
 
 export async function Header() {
   const supabase = await createClient()
@@ -44,6 +45,7 @@ export async function Header() {
               Alitas<span className="text-orange-500">NOA</span>
             </span>
           </Link>
+          <EstadoLocal />
 
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             <Link
