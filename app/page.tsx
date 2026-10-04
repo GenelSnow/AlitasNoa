@@ -15,7 +15,7 @@ export default async function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/30 text-orange-400 text-sm font-medium px-4 py-1.5 rounded-full mb-8">
             <Flame className="h-4 w-4 fill-orange-500 text-orange-500" />
-            Bienvenido a AlitasNOA
+            Bienvenido a Mickey
           </div>
 
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white uppercase leading-none">
