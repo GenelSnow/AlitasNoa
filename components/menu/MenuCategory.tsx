@@ -51,9 +51,8 @@ export function MenuCategory({ category, defaultOpen = false }: Props) {
           </p>
         </div>
         <ChevronDown
-          className={`h-5 w-5 shrink-0 text-zinc-400 transition-transform duration-200 ${
-            open ? "rotate-180" : ""
-          }`}
+          className={`h-5 w-5 shrink-0 text-zinc-400 transition-transform duration-200 ${open ? "rotate-180" : ""
+            }`}
         />
       </button>
 
@@ -69,11 +68,11 @@ export function MenuCategory({ category, defaultOpen = false }: Props) {
       </div>
 
       <div className={`${open ? "block" : "hidden"} md:block mt-3 md:mt-0`}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {category.menu_items
             ?.slice()
             .sort((a, b) => a.sort_order - b.sort_order)
-            .map((item, index) => (
+            .map((item) => (
               <MenuItem
                 key={item.id}
                 item={{
@@ -88,8 +87,6 @@ export function MenuCategory({ category, defaultOpen = false }: Props) {
                   image_url: item.image_url,
                 }}
                 accent={isMielMostaza ? "yellow" : "orange"}
-                priority={index === 0 && open}
-                compact
               />
             ))}
         </div>
