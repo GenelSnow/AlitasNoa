@@ -7,6 +7,7 @@ import { CartProvider } from "@/components/cart/CartProvider"
 import { Toaster } from "sonner"
 import Script from "next/script"
 import { OneSignalInit } from "@/components/esec/OneSignalInit"
+import { PushSubscribeButton } from "@/components/esec/PushSubscribeButton"
 
 const inter = Inter({ subsets: ["latin"], display: "swap" })
 
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <CartProvider>
           <OneSignalInit />
+          <PushSubscribeButton variant="cliente" />
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
