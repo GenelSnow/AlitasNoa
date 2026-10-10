@@ -5,6 +5,8 @@ import { Header } from "@/components/esec/header"
 import { Footer } from "@/components/esec/footer"
 import { CartProvider } from "@/components/cart/CartProvider"
 import { Toaster } from "sonner"
+import Script from "next/script"
+import { OneSignalInit } from "@/components/esec/OneSignalInit"
 
 const inter = Inter({ subsets: ["latin"], display: "swap" })
 
@@ -24,7 +26,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         className={`${inter.className} bg-black text-white antialiased`}
         suppressHydrationWarning
       >
+        <Script
+          src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
+          strategy="afterInteractive"
+        />
         <CartProvider>
+          <OneSignalInit />
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
@@ -48,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}
           />
         </CartProvider>
+
       </body>
     </html>
   )
