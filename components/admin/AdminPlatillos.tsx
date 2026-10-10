@@ -15,6 +15,7 @@ type Item = {
   is_available: boolean
   image_url: string | null
   category_id: string
+  categories?: { name: string } | { name: string }[] | null
 }
 
 const emptyForm = {
@@ -42,12 +43,18 @@ export function AdminPlatillos() {
       supabase
         .from("menu_items")
         .select(
-          "id, name, description, price, spicy_level, is_popular, is_available, image_url, category_id"
+          "id, name, description, price, spicy_level, is_popular, is_available, image_url, category_id, categories (name)"
         )
         .order("sort_order"),
     ])
     setCategories(c.data || [])
     setItems(i.data || [])
+  }
+
+  function nombreCategoria(item: Item) {
+    const c = item.categories
+    if (!c) return "Sin categoría"
+    return Array.isArray(c) ? c[0]?.name ?? "Sin categoría" : c.name
   }
 
   useEffect(() => {
@@ -229,6 +236,12 @@ export function AdminPlatillos() {
           >
             <div className="flex justify-between gap-2">
               <span className="font-medium text-white">{item.name}</span>
+              <p className="text-xs text-zinc-500 mt-1">
+                <span className="text-yellow-500/90">{nombreCategoria(item)}</span>
+                {" · "}
+                {item.is_available ? "Disponible" : "Oculto"}
+                {item.is_popular ? " · Popular" : ""}
+              </p>
               <span className="text-orange-400 text-sm font-semibold">
                 ${Number(item.price).toLocaleString("es-CO")}
               </span>

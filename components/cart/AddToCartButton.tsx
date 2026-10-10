@@ -9,6 +9,7 @@ type Props = {
   name: string
   price: number
   image_url?: string | null
+  category?: string | null  
   className?: string
   label?: string
 }
@@ -18,6 +19,7 @@ export function AddToCartButton({
   name,
   price,
   image_url,
+  category,
   className,
   label = "Agregar",
 }: Props) {
@@ -29,7 +31,7 @@ export function AddToCartButton({
       onClick={(e) => {
         e.preventDefault()
         e.stopPropagation()
-        addItem({ id, name, price, image_url })
+        addItem({ id, name, price, image_url, category: category ?? null })
         toast.success("Agregado al carrito", {
           description: name,
         })

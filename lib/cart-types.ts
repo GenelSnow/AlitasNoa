@@ -4,6 +4,7 @@ export type CartItem = {
   price: number
   quantity: number
   image_url?: string | null
+  category?: string | null
 }
 
 export type CheckoutData = {

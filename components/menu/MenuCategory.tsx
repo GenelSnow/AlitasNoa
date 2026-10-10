@@ -53,6 +53,7 @@ export function MenuCategory({ category }: Props) {
                 name: item.name,
                 description: item.description || "",
                 price: Number(item.price),
+                category: category.name,
                 spicyLevel: item.spicy_level,
                 popular: item.is_popular,
                 image: item.image_url || undefined,

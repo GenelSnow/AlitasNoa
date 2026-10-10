@@ -95,6 +95,7 @@ export function MenuItem({ item, accent = "orange" }: Props) {
               name={item.name}
               price={item.price}
               image_url={item.image_url ?? item.image ?? null}
+              category={item.category ?? null}
               className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-orange-500 hover:bg-orange-400 text-black text-sm font-bold px-4 h-9 transition-colors"
             />
           </div>
