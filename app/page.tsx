@@ -2,6 +2,8 @@ import Link from "next/link"
 import { Flame, Percent, Gift, Star, ArrowRight } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
 import { getEstadoRestaurante } from "@/lib/restaurante-abierto"
+import { ClienteEstadoNotifs } from "@/components/esec/ClienteEstadoNotifs"
+import { ActivarAvisosButton } from "@/components/esec/ActivarAvisosButton"
 
 export default async function Home() {
   const supabase = await createClient()
@@ -9,6 +11,7 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser()
   const estado = await getEstadoRestaurante()
+
 
   return (
     <div className="relative min-h-[calc(100vh-140px)] flex flex-col">
@@ -35,6 +38,17 @@ export default async function Home() {
             Alas que te hacen
             <span className="block text-orange-500 mt-2">volar</span>
           </h1>
+
+          <div className="mt-4 text-zinc-400 text-sm md:text-base">
+            <ClienteEstadoNotifs
+              abierto={estado.abierto}
+              forzado={estado.forzado}
+              mensaje={estado.mensaje}
+            />
+            <div className="mt-4 flex justify-center">
+              <ActivarAvisosButton />
+            </div>
+          </div>
 
           <p className="mt-6 text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
             Las mejores alitas de Baranoa Atlantico📍. Clásicas, Miel Mostaza y mucho más.
