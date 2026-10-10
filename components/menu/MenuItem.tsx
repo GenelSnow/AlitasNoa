@@ -18,7 +18,8 @@ type MenuItemData = {
   spicyLevel?: number
   popular?: boolean
   image?: string
-  image_url?: string | null  // añadir esto
+  image_url?: string | null
+  category?: string | null
 }
 
 export function MenuItem({ item, accent = "orange" }: Props) {
@@ -68,9 +69,9 @@ export function MenuItem({ item, accent = "orange" }: Props) {
             <h3 className="font-bold text-lg tracking-tight text-white group-hover:text-orange-400 transition-colors">
               {item.name}
             </h3>
-            <p className="text-sm text-zinc-400 mt-1.5 leading-relaxed line-clamp-2">
-              {item.description}
-            </p>
+            {item.category && (
+              <p className="text-xs text-zinc-500">{item.category}</p>
+            )}
           </div>
 
           {item.spicyLevel !== undefined && item.spicyLevel > 0 && (

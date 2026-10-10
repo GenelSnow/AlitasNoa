@@ -5,7 +5,7 @@ import {
   type HorarioSemana,
 } from "@/lib/horario"
 
-export async function EstadoLocal() {
+export async function EstadoLocal({ compact = false }: { compact?: boolean }) {
   const supabase = await createClient()
   const { data } = await supabase
     .from("config_app")
@@ -26,16 +26,15 @@ export async function EstadoLocal() {
 
   return (
     <span
-      className={`hidden sm:inline-flex items-center gap-1.5 text-[11px] font-bold px-2 py-0.5 rounded-full border ${
-        abierto
+      className={`inline-flex items-center gap-1.5 font-bold rounded-full border ${compact ? "text-[10px] px-2 py-0.5" : "text-[11px] px-2.5 py-1"
+        } ${abierto
           ? "bg-green-500/15 text-green-400 border-green-500/30"
           : "bg-red-500/15 text-red-400 border-red-500/30"
-      }`}
+        }`}
     >
       <span
-        className={`h-1.5 w-1.5 rounded-full ${
-          abierto ? "bg-green-400 animate-pulse" : "bg-red-400"
-        }`}
+        className={`h-1.5 w-1.5 rounded-full ${abierto ? "bg-green-400 animate-pulse" : "bg-red-400"
+          }`}
       />
       {abierto ? `Abierto${hasta ? ` · ${hasta}` : ""}` : "Cerrado"}
     </span>
