@@ -26,8 +26,25 @@ export function AdminConfig() {
     nequi_numero: "",
     llave_numero: "",
   })
+
   const [horario, setHorario] = useState<HorarioSemana>(HORARIO_DEFAULT)
   const [loading, setLoading] = useState(false)
+  const [cierreHoy, setCierreHoy] = useState(false)
+  const [motivo, setMotivo] = useState("")
+  const [motivoOtro, setMotivoOtro] = useState("")
+  const [mensajeCierre, setMensajeCierre] = useState(
+    "Hoy no estamos atendiendo. Gracias por tu comprensión."
+  )
+  const [hubOpen, setHubOpen] = useState(false)
+
+  const MOTIVOS = [
+    "Día festivo",
+    "Mantenimiento",
+    "Evento privado",
+    "Falta de insumos",
+    "Otro",
+  ] as const
+
 
   useEffect(() => {
     async function load() {
@@ -43,11 +60,27 @@ export function AdminConfig() {
           try {
             setHorario({ ...HORARIO_DEFAULT, ...JSON.parse(row.valor) })
           } catch { }
+
+          if (row.clave === "cierre_hoy") {
+            setCierreHoy(row.valor === "true")
+          }
+          if (row.clave === "cierre_motivo") {
+            const predef = MOTIVOS.includes(row.valor as (typeof MOTIVOS)[number])
+            if (predef) setMotivo(row.valor)
+            else if (row.valor) {
+              setMotivo("Otro")
+              setMotivoOtro(row.valor)
+            }
+          }
+          if (row.clave === "cierre_mensaje" && row.valor) {
+            setMensajeCierre(row.valor)
+          }
         }
       })
       setParams(next)
     }
     load()
+
   }, [])
 
   function patchDia(
@@ -64,6 +97,9 @@ export function AdminConfig() {
   async function save() {
     setLoading(true)
 
+    const motivoFinal =
+      motivo === "Otro" ? motivoOtro.trim() : motivo
+
     const updates = [
       ...PARAM_KEYS.map((clave) => ({
         clave,
@@ -72,6 +108,18 @@ export function AdminConfig() {
       {
         clave: "horario_semana",
         valor: JSON.stringify(horario),
+      },
+      {
+        clave: "cierre_hoy",
+        valor: cierreHoy ? "true" : "false",
+      },
+      {
+        clave: "cierre_motivo",
+        valor: motivoFinal,
+      },
+      {
+        clave: "cierre_mensaje",
+        valor: mensajeCierre.trim(),
       },
     ]
 
@@ -123,8 +171,8 @@ export function AdminConfig() {
           <h2 className="font-bold text-white text-lg">Horario del local</h2>
           <span
             className={`text-xs font-bold px-2.5 py-1 rounded-full ${estado.abierto
-                ? "bg-green-500/15 text-green-400"
-                : "bg-red-500/15 text-red-400"
+              ? "bg-green-500/15 text-green-400"
+              : "bg-red-500/15 text-red-400"
               }`}
           >
             Ahora: {estado.abierto ? "Abierto" : "Cerrado"}
@@ -170,6 +218,69 @@ export function AdminConfig() {
             </div>
           )
         })}
+      </div>
+      {/* Hoy no abrimos */}
+      <div className="border border-zinc-800 rounded-2xl p-5 bg-zinc-950/80 space-y-3">
+        <button
+          type="button"
+          onClick={() => setHubOpen((v) => !v)}
+          className={`w-full h-11 rounded-full font-bold text-sm border ${cierreHoy
+              ? "bg-red-500/15 text-red-400 border-red-500/40"
+              : "bg-zinc-900 text-zinc-300 border-zinc-700"
+            }`}
+        >
+          {cierreHoy ? "Cerrado hoy (activo) — editar" : "Hoy no abrimos"}
+        </button>
+
+        {hubOpen && (
+          <div className="space-y-3 pt-1">
+            <label className="flex items-center gap-2 text-sm text-white">
+              <input
+                type="checkbox"
+                checked={cierreHoy}
+                onChange={(e) => setCierreHoy(e.target.checked)}
+              />
+              Forzar cerrado hoy (ignora el horario)
+            </label>
+
+            <div>
+              <p className="text-xs text-zinc-400 mb-1">Motivo</p>
+              <div className="flex flex-wrap gap-2">
+                {MOTIVOS.map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setMotivo(m)}
+                    className={`text-xs px-3 h-8 rounded-full border ${motivo === m
+                        ? "border-orange-500 text-orange-400"
+                        : "border-zinc-700 text-zinc-400"
+                      }`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+              {motivo === "Otro" && (
+                <input
+                  value={motivoOtro}
+                  onChange={(e) => setMotivoOtro(e.target.value)}
+                  placeholder="Escribe el motivo"
+                  className="mt-2 w-full h-10 px-3 rounded-lg bg-zinc-900 border border-zinc-700 text-sm text-white"
+                />
+              )}
+            </div>
+
+            <div>
+              <p className="text-xs text-zinc-400 mb-1">Mensaje al cliente</p>
+              <textarea
+                value={mensajeCierre}
+                onChange={(e) => setMensajeCierre(e.target.value)}
+                rows={3}
+                className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-sm text-white resize-none"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Un solo guardar */}
