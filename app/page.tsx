@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Flame, Percent, Gift, Star, ArrowRight } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
+import { getEstadoRestaurante } from "@/lib/restaurante-abierto"
 
 export default async function Home() {
   const supabase = await createClient()
@@ -11,15 +12,17 @@ export default async function Home() {
 
   return (
     <div className="relative min-h-[calc(100vh-140px)] flex flex-col">
-      {estado.forzado && (
-        <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-          <p className="font-bold">Hoy no abrimos</p>
-          {estado.motivo ? (
-            <p className="text-xs text-red-300/80 mt-0.5">{estado.motivo}</p>
-          ) : null}
-          <p className="mt-1 text-zinc-300">{estado.mensaje}</p>
-        </div>
-      )}
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
+        {estado.forzado && (
+          <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            <p className="font-bold">Hoy no abrimos</p>
+            {estado.motivo ? (
+              <p className="text-xs text-red-300/80 mt-0.5">{estado.motivo}</p>
+            ) : null}
+            <p className="mt-1 text-zinc-300">{estado.mensaje}</p>
+          </div>
+        )}
+      </div>
       {/* Hero */}
       <section className="flex-1 flex items-center justify-center px-4 py-16 md:py-24">
         <div className="max-w-4xl mx-auto text-center">
