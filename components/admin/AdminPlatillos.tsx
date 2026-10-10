@@ -246,10 +246,6 @@ export function AdminPlatillos() {
                 ${Number(item.price).toLocaleString("es-CO")}
               </span>
             </div>
-            <p className="text-xs text-zinc-500 mt-1">
-              {item.is_available ? "Disponible" : "Oculto"}
-              {item.is_popular ? " · Popular" : ""}
-            </p>
           </button>
         ))}
       </div>
