@@ -4,21 +4,7 @@ import { useEffect, useState } from "react"
 import { Bell } from "lucide-react"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
-
-type OneSignalLike = {
-  Notifications: {
-    permissionNative: string
-    requestPermission: () => Promise<void>
-  }
-  User: {
-    PushSubscription: {
-      optedIn: boolean
-      optIn: () => Promise<void>
-    }
-    addTag: (key: string, value: string) => void
-  }
-  login?: (externalId: string) => Promise<void>
-}
+import type { OneSignalSDK } from "@/types/onesignal"
 
 export function PushSubscribeButton({
   variant = "cliente",
@@ -31,7 +17,7 @@ export function PushSubscribeButton({
 
   useEffect(() => {
     window.OneSignalDeferred = window.OneSignalDeferred || []
-    window.OneSignalDeferred.push(async (OneSignal: OneSignalLike) => {
+    window.OneSignalDeferred.push(async (OneSignal: OneSignalSDK) => {
       setReady(true)
       try {
         setSubscribed(!!OneSignal.User?.PushSubscription?.optedIn)
@@ -48,31 +34,36 @@ export function PushSubscribeButton({
     }
     setLoading(true)
     try {
-      await new Promise<void>((resolve) => {
-        window.OneSignalDeferred!.push(async (OneSignal: OneSignalLike) => {
-          await OneSignal.Notifications.requestPermission()
-          await OneSignal.User.PushSubscription.optIn()
+      await new Promise<void>((resolve, reject) => {
+        window.OneSignalDeferred = window.OneSignalDeferred || []
+        window.OneSignalDeferred.push(async (OneSignal: OneSignalSDK) => {
+          try {
+            await OneSignal.Notifications.requestPermission()
+            await OneSignal.User.PushSubscription.optIn()
 
-          if (variant === "staff") {
-            OneSignal.User.addTag("rol", "staff")
-            const supabase = createClient()
-            const {
-              data: { user },
-            } = await supabase.auth.getUser()
-            if (user && OneSignal.login) {
-              await OneSignal.login(user.id)
+            if (variant === "staff") {
+              OneSignal.User.addTag("rol", "staff")
+              const supabase = createClient()
+              const {
+                data: { user },
+              } = await supabase.auth.getUser()
+              if (user?.id && OneSignal.login) {
+                await OneSignal.login(user.id)
+              }
+            } else {
+              OneSignal.User.addTag("rol", "cliente")
             }
-          } else {
-            OneSignal.User.addTag("rol", "cliente")
-          }
 
-          setSubscribed(true)
-          toast.success(
-            variant === "staff"
-              ? "Avisos de pedidos activados"
-              : "Avisos activados"
-          )
-          resolve()
+            setSubscribed(true)
+            toast.success(
+              variant === "staff"
+                ? "Avisos de pedidos activados"
+                : "Avisos activados"
+            )
+            resolve()
+          } catch (e) {
+            reject(e)
+          }
         })
       })
     } catch {
