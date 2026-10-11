@@ -3,7 +3,7 @@ import { Flame, Percent, Gift, Star, ArrowRight } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
 import { getEstadoRestaurante } from "@/lib/restaurante-abierto"
 import { ClienteEstadoNotifs } from "@/components/esec/ClienteEstadoNotifs"
-import { ActivarAvisosButton } from "@/components/esec/ActivarAvisosButton"
+import { PushSubscribeButton } from "@/components/esec/PushSubscribeButton"
 
 export default async function Home() {
   const supabase = await createClient()
@@ -45,8 +45,8 @@ export default async function Home() {
               forzado={estado.forzado}
               mensaje={estado.mensaje}
             />
-            <div className="mt-4 flex justify-center">
-              <ActivarAvisosButton />
+            <div className="mt-6 flex justify-center">
+              <PushSubscribeButton variant="cliente" />
             </div>
           </div>
 
