@@ -11,11 +11,34 @@ import { PushSubscribeButton } from "@/components/esec/PushSubscribeButton"
 const inter = Inter({ subsets: ["latin"], display: "swap" })
 
 export const metadata: Metadata = {
-  title: "AlitasNOA | Alas que te hacen volar",
-  description: "Las mejores alitas de la ciudad. Clásicas y Miel Mostaza.",
+  title: 'AlitasNOA | Alas que te hacen volar',
+  description: 'Las mejores alitas de la ciudad. Clásicas, Miel Mostaza y mucho más. Preparadas al momento con salsas caseras.',
+  metadataBase: new URL('https://alitas-noa.vercel.app'),
+  openGraph: {
+    title: 'AlitasNOA | Alas que te hacen volar',
+    description: 'Las mejores alitas de la ciudad. Clásicas, Miel Mostaza y mucho más. Preparadas al momento con salsas caseras.',
+    url: 'https://alitas-noa.vercel.app',
+    siteName: 'AlitasNOA',
+    images: [
+      {
+        url: 'https://ljjbgqqxunzqhwofoved.supabase.co/storage/v1/object/public/comida/loogo.jpeg', // o mejor una imagen de 1200x630
+        width: 1200,
+        height: 630,
+        alt: 'AlitasNOA',
+      },
+    ],
+    locale: 'es_CO',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AlitasNOA | Alas que te hacen volar',
+    description: 'Las mejores alitas de la ciudad. Clásicas, Miel Mostaza y mucho más.',
+    images: ['https://ljjbgqqxunzqhwofoved.supabase.co/storage/v1/object/public/comida/loogo.jpeg'],
+  },
   icons: {
-    icon: "https://ljjbgqqxunzqhwofoved.supabase.co/storage/v1/object/public/comida/loogo.jpeg",
-    apple: "https://ljjbgqqxunzqhwofoved.supabase.co/storage/v1/object/public/comida/loogo.jpeg",
+    icon: 'https://ljjbgqqxunzqhwofoved.supabase.co/storage/v1/object/public/comida/loogo.jpeg',
+    apple: 'https://ljjbgqqxunzqhwofoved.supabase.co/storage/v1/object/public/comida/loogo.jpeg',
   },
 }
 
