@@ -6,8 +6,7 @@ import { Footer } from "@/components/esec/footer"
 import { CartProvider } from "@/components/cart/CartProvider"
 import { Toaster } from "sonner"
 import Script from "next/script"
-import { PushSubscribeButton } from "@/components/esec/PushSubscribeButton"
-
+import { OneSignalInit } from "@/components/esec/OneSignalInit"
 const inter = Inter({ subsets: ["latin"], display: "swap" })
 
 export const metadata: Metadata = {
@@ -54,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           strategy="afterInteractive"
         />
         <CartProvider>
-          <PushSubscribeButton variant="cliente" />
+          <OneSignalInit />
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
