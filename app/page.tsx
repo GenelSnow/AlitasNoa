@@ -39,7 +39,7 @@ export default async function Home() {
             <span className="block text-orange-500 mt-2">volar</span>
           </h1>
 
-          <div className="mt-4 text-zinc-400 text-sm md:text-base">
+          {/* <div className="mt-4 text-zinc-400 text-sm md:text-base">
             <ClienteEstadoNotifs
               abierto={estado.abierto}
               forzado={estado.forzado}
@@ -48,7 +48,7 @@ export default async function Home() {
             <div className="mt-6 flex justify-center">
               <PushSubscribeButton variant="cliente" />
             </div>
-          </div>
+          </div> */}
 
           <p className="mt-6 text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
             Las mejores alitas de Baranoa Atlantico📍. Clásicas, Miel Mostaza y mucho más.

@@ -36,7 +36,7 @@ export default async function AdminPedidosPage() {
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-4xl">
-      <PushSubscribeButton variant="staff" />
+      {/* <PushSubscribeButton variant="staff" /> */}
       <h1 className="text-3xl font-black text-white mb-2">Pedidos</h1>
       <p className="text-zinc-400 text-sm mb-8">
         Pedidos en curso y reservas. Confirma reservas cuando abras el local.
